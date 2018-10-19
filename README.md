@@ -10,7 +10,7 @@ The installation is very simple:
 	* struct, sys, os
 	* ScrolledText, Tkinter
 2. Git clone the repository to your favorite location
-3. Set the environment variable DATADIR to point at the folder with the snapshot data. For example, the snapshot files of a simulation named 'test' must be located in $DATADIR/mh1w1f1/, and the files must be named e.g. test_000 in that directory.
+3. Set the environment variable DATADIR to point at the folder with the snapshot data. For example, the snapshot files of a simulation named 'test' must be located in $DATADIR/test/, and the files must be named e.g. test_000 in that directory.
 4. Start the program with 'python sator.py'. If all goes well you should see the main menu.
 
 Please report any bugs to the Issues site, email me, or simply fix it yourself. Have fun!
