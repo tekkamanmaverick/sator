@@ -12,7 +12,7 @@ def get_image(self, zoom, move, rotate, plot_option):
 
     opts = self.plot_sub_options
 
-    field = opts[1].get()
+    refined_field = opts[1].get()
     length_unit = opts[2].get()
     width = float(opts[3].get())
     nbins = int(opts[4].get())
@@ -22,14 +22,17 @@ def get_image(self, zoom, move, rotate, plot_option):
     center_mode = 0
     npoints = nbins**2
 
-    if field == 'gamma':
+    if refined_field == 'gamma':
         log_plot = 0
     else:
         log_plot = 1
 
     # Get particple positions
 
-    pos = self.get_refined_field('pos')
+    flag, pos = self.get_refined_field('pos')
+
+    if flag:
+        return
 
     # Do this the first time the plot is created
 
@@ -37,7 +40,10 @@ def get_image(self, zoom, move, rotate, plot_option):
 
         # Center box
 
-        nh = self.get_refined_field('nh')
+        flag, nh = self.get_refined_field('nh')
+
+        if flag:
+            return
 
         self.center = get_center(pos, nh, 0)
 
@@ -143,7 +149,12 @@ def get_image(self, zoom, move, rotate, plot_option):
 
         # Select nearest neigbours in target field
 
-        vals = self.get_refined_field(field)[idx]
+        flag, vals = self.get_refined_field(refined_field)
+
+        if flag:
+            return
+
+        vals = vals[idx]
 
         if log_plot:
             vals = np.log10(vals)
@@ -181,13 +192,25 @@ def get_image(self, zoom, move, rotate, plot_option):
         x = np.array(rot_pos[:, 0])
         y = np.array(rot_pos[:, 1])
 
-        mass = self.get_refined_field('mass')
+        flag, mass = self.get_refined_field('mass')
+
+        if flag:
+            return
+
         mass = mass[idx]
 
-        rho = self.get_refined_field('rho')
+        flag, rho = self.get_refined_field('rho')
+
+        if flag:
+            return
+
         rho = rho[idx]
 
-        ref = self.get_refined_field(field)
+        flag, ref = self.get_refined_field(refined_field)
+
+        if flag:
+            return
+        
         ref = ref[idx]
 
         if log_plot:
@@ -233,7 +256,7 @@ def get_image(self, zoom, move, rotate, plot_option):
     frac = 1. - bottom - top - frac_cbar
     left = (1. - frac) / 2.
 
-    cmap = get_color_map(field)
+    cmap = get_color_map(refined_field)
 
     ax = self.fig.add_axes([left, bottom, frac, frac])
 
@@ -249,7 +272,7 @@ def get_image(self, zoom, move, rotate, plot_option):
     offset_x = 0.01
     offset_y = 0.05
 
-    self.fig.text(left + frac + offset_x, bottom + frac + offset_y, get_label(field), rotation = 270)
+    self.fig.text(left + frac + offset_x, bottom + frac + offset_y, get_label(refined_field), rotation = 270)
 
     offset = 0.02
 

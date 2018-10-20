@@ -12,7 +12,7 @@ class sator:
 
         # Initialize settings
 
-        self.init_settings()
+        self.get_settings()
 
         # Initialize flags
         
@@ -98,9 +98,9 @@ class sator:
 
         self.destroy_frames(1, 1, 1, 0)
 
-        # Read header
+        # Get header from snapshot
 
-        self.read_header(0, 1)
+        self.get_header(0, 1)
 
         # Check for read error
         
@@ -148,11 +148,11 @@ class sator:
 
         # Determine which snap fields and refined fields are available
 
-        self.init_fields()
+        flag = self.init_fields()
 
         # Check for existence of refined fields
 
-        if self.flag_error == 1:
+        if flag:
 
             self.error_message('No refined fields for this particle type!')
 
@@ -388,12 +388,13 @@ class redirect(object):
 
 # From settings.py
 
-sator.init_settings = init_settings
+sator.get_settings = get_settings
 
 # From snap.py
 
-sator.read_header = read_header
+sator.get_header = get_header
 sator.get_snap_field = get_snap_field
+sator.snap_field_error = snap_field_error
 
 # From fields.py
 

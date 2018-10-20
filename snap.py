@@ -2,7 +2,7 @@
 from include import *
 from utils import *
 
-def read_header(self, sub_num, verbose):
+def get_header(self, sub_num, verbose):
 
     self.header = header()
 
@@ -79,8 +79,6 @@ def read_header(self, sub_num, verbose):
     # Save header data
 
     if self.flag_hdf5:
-
-        # Save header data
 
         self.header.npart = h5py_header['NumPart_ThisFile']
         self.header.mass = h5py_header['MassTable']
@@ -221,6 +219,15 @@ def read_header(self, sub_num, verbose):
 
 def get_snap_field(self, snap_field):
 
+    flag = 0
+
+    keys = self.snap_fields.keys()
+
+    if snap_field not in keys:
+        flag = 1
+        vals = 0
+        return flag, vals
+    
     if not self.snap_fields[snap_field]:
 
         header = self.header
@@ -289,7 +296,7 @@ def get_snap_field(self, snap_field):
 
             for i in np.arange(self.header.numfiles):
 
-                self.read_header(i, 0)
+                self.get_header(i, 0)
 
                 offset = self.header_size + 2 * np.dtype('int32').itemsize
 
@@ -339,8 +346,14 @@ def get_snap_field(self, snap_field):
             if dims > 1:
                 vals = vals.reshape((tot_count / dims, dims))
             
-        return vals
+        return flag, vals
 
     else:
 
-        return self.snap_fields[snap_field]
+        return flag, self.snap_fields[snap_field]
+
+def snap_field_error(self, snap_field):
+
+    string = 'Could not read snap field \'' + snap_field + '\''
+
+    self.error_message(string)

@@ -26,7 +26,7 @@ def init_fields(self):
     self.snap_fields_nfields = len(self.snap_fields_exist)
     self.snap_fields_rank = len(self.snap_fields_exist[0])
 
-    # For a given particle type, these fields are present
+    # For a given particle type, these snap fields are present
 
     if self.flag_hdf5:
         
@@ -49,7 +49,6 @@ def init_fields(self):
             if len(ds.shape) == 1:
                 self.snap_fields_dims[field] = 1
             else:
-
                 self.snap_fields_dims[field] = ds.shape[1]
 
             self.snap_fields_dtypes[field] = ds.dtype
@@ -70,76 +69,26 @@ def init_fields(self):
             self.snap_fields_dims[snap_field] = self.snap_fields_exist[i][1]
             self.snap_fields_dtypes[snap_field] = self.snap_fields_exist[i][2]
 
-    # These refined fields are available
+    # Inititalize refined fields for selected particle type
 
-    refined_fields = [['pos', 3, np.dtype('float64')],
-                      ['vel', 3, np.dtype('float64')],
-                      ['id', 1, np.dtype('int32')],
-                      ['mass', 1, np.dtype('float64')],
-                      ['rho', 1, np.dtype('float64')],
-                      ['nh', 1, np.dtype('float64')],
-                      ['temp', 1, np.dtype('float64')],
-                      ['vol', 1, np.dtype('float64')],
-                      ['gravacc', 3, np.dtype('float64')],
-                      ['gradp', 3, np.dtype('float64')],
-                      ['abhm', 1, np.dtype('float64')],
-                      ['abh2', 1, np.dtype('float64')],
-                      ['abhii', 1, np.dtype('float64')],
-                      ['gamma', 1, np.dtype('float64')],
-                      ['allowref', 1, np.dtype('int32')],
-                      ['divvel', 1, np.dtype('float64')]]
-
-    self.refined_fields_nfields = len(refined_fields)
-    self.refined_fields_rank = len(refined_fields[0])
-
-    # Set which snapshot fields are required for each refined field
-
-    fields_req = {}
-
-    fields_req['pos'] = ['Coordinates']
-    fields_req['vel'] = ['Velocities']
-    fields_req['id'] = ['ParticleIDs']
-    fields_req['mass'] = ['Masses']
-    fields_req['rho'] = ['Density']
-    fields_req['nh'] = ['Density']
-    fields_req['temp'] = ['InternalEnergy', 'Gamma']
-    fields_req['vol'] = ['Volume']
-    fields_req['gravacc'] = ['Acceleration']
-    fields_req['gradp'] = ['PressureGradient']
-    fields_req['abhm'] = ['ChemicalAbundances']
-    fields_req['abh2'] = ['ChemicalAbundances']
-    fields_req['abhii'] = ['ChemicalAbundances']
-    fields_req['gamma'] = ['Gamma']
-    fields_req['allowref'] = ['AllowRefinement']
-    fields_req['divvel'] = ['VelocityDivergence']
-
-    # For a given particle type, these refined fields are available
-
+    self.refined_fields_nfields = len(self.refined_fields_exist)
+    self.refined_fields_entries = len(self.refined_fields_exist[0])
     self.refined_fields = {}
     self.refined_fields_dims = {}
     self.refined_fields_dtypes = {}
 
     for i in np.arange(self.refined_fields_nfields):
 
-        field = refined_fields[i][0]
+        field = self.refined_fields_exist[i][0]
         
-        snap_field_list = fields_req[field]
-
-        flag = 1
-
-        if not snap_field_list:
-            flag = 0
-
-        for snap_sub_field in snap_field_list:
-            if snap_sub_field not in list(self.snap_fields):
-                flag = 0
-        if flag:
-            self.refined_fields[field] = np.empty(0)
-            self.refined_fields_dims[field] = refined_fields[i][1]
-            self.refined_fields_dtypes[field] = refined_fields[i][2]
-
+        self.refined_fields[field] = np.empty(0)
+        self.refined_fields_dims[field] = self.refined_fields_exist[i][1]
+        self.refined_fields_dtypes[field] = self.refined_fields_exist[i][2]
+        
     if not self.refined_fields:
-        sator.flag_error = 1
+        return 1
+    else:
+        return 0
 
 def get_plot_fields(self):
 
@@ -150,15 +99,17 @@ def get_plot_fields(self):
             if self.refined_fields_dtypes[field] == np.dtype('float64'):
                 self.plot_fields[field] = self.refined_fields[field]
 
-def get_refined_field(self, field):
+def get_refined_field(self, refined_field):
 
-    if self.refined_fields[field].size:
+    flag = 0
 
-        return self.refined_fields[field]
+    if self.refined_fields[refined_field].size:
+
+        return flag, self.refined_fields[refined_field]
 
     else:
 
-        print 'Reading field', field, '..'
+        print 'Reading refined field \'' + refined_field + '\'..'
 
         header = self.header
 
@@ -170,78 +121,229 @@ def get_refined_field(self, field):
         unit_time = header.unit_time
         unit_energy = header.unit_energy
 
-        if field == 'pos':
-            vals = self.get_snap_field('Coordinates')
-            fac = 1. / h * unit_length
-            vals *= fac
-        elif field == 'vel':
-            vals = self.get_snap_field('Velocities')
-            fac = 1. / np.sqrt(1. + redshift) * unit_velocity
-            vals *= fac
-        elif field == 'id':
-            vals = self.get_snap_field('ParticleIDs')
-        elif field == 'mass':
-            vals = self.get_snap_field('Masses')
-            fac = 1. / h * unit_mass
-            vals *= fac
-        elif field == 'rho':
-            vals = self.get_snap_field('Density')
-            fac = h**2 * (1. + redshift)**3 * unit_mass / unit_length**3
-            vals *= fac
-        elif field == 'nh':
-            vals = self.get_snap_field('Density')
-            fac = h**2 * (1. + redshift)**3 * unit_mass / unit_length**3
-            vals *= fac
-            fac = hydrogen_massfrac / protonmass
-            vals *= fac
-        elif field == 'u':
-            vals = self.get_snap_field('InternalEnergy')
-            fac = unit_energy / unit_mass
-            vals *= fac
-        elif field == 'temp':
-            u = self.get_snap_field('InternalEnergy')
-            fac = unit_energy / unit_mass
-            u *= fac
-            gamma = self.get_snap_field('Gamma')
-            chem = self.get_snap_field('ChemicalAbundances')
-            abhm = chem[:, 0]
-            abh2 = chem[:, 1]
-            abhii = chem[:, 2]
-            abe = abhii
-            mu = (1. + 4. * abhe) / (1. + abhe - abh2 + abe)
-            vals = mu * (gamma - 1.) * protonmass / boltzmann * u
-        elif field == 'vol':
-            vals = self.get_snap_field('Volume')
-            fac = (1. / h)**3 * unit_length**3
-            vals *= fac
-        elif field == 'gravacc':
-            vals = self.get_snap_field('Acceleration')
-            fac = (1. + redshift)**2
-            vals /= fac
-        elif field == 'gradp':
-            vals = self.get_snap_field('PressureGradient')
-            fac = (1. + redshift)**4 * h**3
-            vals *= fac
-        elif field == 'abhm':
-            vals = self.get_snap_field('ChemicalAbundances')
-            vals = vals[:, 0]
-        elif field == 'abh2':
-            vals = self.get_snap_field('ChemicalAbundances')
-            vals = vals[:, 1]
-        elif field == 'abhii':
-            vals = self.get_snap_field('ChemicalAbundances')
-            vals = vals[:, 2]
-        elif field == 'gamma':
-            vals = self.get_snap_field('Gamma')
-        elif field == 'allowref':
-            vals = self.get_snap_field('AllowRefinement')
-        elif field == 'divvel':
-            vals = self.get_snap_field('VelocityDivergence')
-            fac = (1. + redshift) * h * unit_velocity / unit_length
-            vals *= fac
+        if refined_field == 'pos':
+
+            snap_field = 'Coordinates'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = 1. / h * unit_length
+                vals *= fac
+
+        elif refined_field == 'vel':
+
+            snap_field = 'Velocities'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = 1. / np.sqrt(1. + redshift) * unit_velocity
+                vals *= fac
+
+        elif refined_field == 'id':
+
+            refined_field_list.append(refined_field)
+
+            snap_field = 'ParticleIDs'
+
+            flag, vals = self.get_snap_field('ParticleIDs')
+
+            if flag:
+                self.snap_field_error(snap_field)
+
+        elif refined_field == 'mass':
+
+            snap_field = 'Masses'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = 1. / h * unit_mass
+                vals *= fac
+
+        elif refined_field == 'rho':
+
+            snap_field = 'Density'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = h**2 * (1. + redshift)**3 * unit_mass / unit_length**3
+                vals *= fac
+
+        elif refined_field == 'nh':
+
+            snap_field = 'Density'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = h**2 * (1. + redshift)**3 * unit_mass / unit_length**3
+                vals *= fac
+                fac = hydrogen_massfrac / protonmass
+                vals *= fac
+
+        elif refined_field == 'u':
+
+            snap_field = 'InternalEnergy'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = unit_energy / unit_mass
+                vals *= fac
+
+        elif refined_field == 'temp':
+
+            snap_field = 'Gamma'
+
+            flag, gamma = self.get_snap_field(snap_field)
+
+            if flag:
+                gamma = gamma_adb
+
+            snap_field = 'ChemicalAbundances'
+
+            flag, chem = self.get_snap_field(snap_field)
+
+            if flag:
+                mu = mu_prim
+            else:
+                abhm = chem[:, 0]
+                abh2 = chem[:, 1]
+                abhii = chem[:, 2]
+                abe = abhii
+                mu = (1. + 4. * abhe) / (1. + abhe - abh2 + abe)
+
+            snap_field = 'InternalEnergy'
+
+            flag, u = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = unit_energy / unit_mass
+                u *= fac
+                vals = mu * (gamma - 1.) * protonmass / boltzmann * u
+
+        elif refined_field == 'vol':
+
+            snap_field = 'Volume'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = (1. / h)**3 * unit_length**3
+                vals *= fac
+
+        elif refined_field == 'gravacc':
+
+            snap_field = 'Acceleration'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = (1. + redshift)**2
+                vals /= fac
+
+        elif refined_field == 'gradp':
+
+            snap_field = 'PressureGradient'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = (1. + redshift)**4 * h**3
+                vals *= fac
+
+        elif refined_field == 'abhm':
+
+            snap_field = 'ChemicalAbundances'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                vals = vals[:, 0]
+
+        elif refined_field == 'abh2':
+
+            snap_field = 'ChemicalAbundances'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                vals = vals[:, 1]
+
+        elif refined_field == 'abhii':
+
+            snap_field = 'ChemicalAbundances'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                vals = vals[:, 2]
+
+        elif refined_field == 'gamma':
+
+            snap_field = 'Gamma'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+
+        elif refined_field == 'allowref':
+
+            snap_field = 'AllowRefinement'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+
+        elif refined_field == 'divvel':
+
+            snap_field = 'VelocityDivergence'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = (1. + redshift) * h * unit_velocity / unit_length
+                vals *= fac
+
         else:
-            endrun('Field not recognized!')
+            flag = 1
 
-        self.refined_fields[field] = vals
+        if flag:
+            self.refined_fields[refined_field] = np.empty(0)
+        else:
+            self.refined_fields[refined_field] = vals
 
-        return vals
+        return flag, vals
