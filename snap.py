@@ -309,7 +309,7 @@ def get_snap_field(self, snap_field):
                         npart = self.header.npart[part_type]
 
                         if npart:
-
+                            print self.snap_fields_dims[field]
                             count = npart * self.snap_fields_dims[field]
                             bytes_per_element = self.snap_fields_dtypes[field].itemsize
 

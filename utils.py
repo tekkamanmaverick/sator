@@ -120,7 +120,4 @@ def endrun(msg):
 
     print msg
 
-    if mpi_flag:
-        mpi_comm.Abort()
-    else:
-        sys.exit()
+    sys.exit()

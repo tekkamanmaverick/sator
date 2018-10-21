@@ -1,4 +1,7 @@
 
+*~
 *.o
 *.so
 *.pyc
+par.txt
+snap_fields.txt

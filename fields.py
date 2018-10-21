@@ -7,25 +7,6 @@ def init_fields(self):
 
     self.flag_error = 0
 
-    # These fields exist in the snapshot in this order (for format 1)
-
-    self.snap_fields_exist = [['Coordinates', 3, np.dtype('float64')],
-                              ['Velocities', 3, np.dtype('float64')],
-                              ['ParticleIDs', 1, np.dtype('int32')],
-                              ['Masses', 1, np.dtype('float64')],
-                              ['InternalEnergy', 1, np.dtype('float64')],
-                              ['Density', 1, np.dtype('float64')],
-                              ['Volume', 1, np.dtype('float64')],
-                              ['Acceleration', 3, np.dtype('float64')],
-                              ['PressureGradient', 3, np.dtype('float64')],
-                              ['ChemicalAbundances', 3, np.dtype('float64')],
-                              ['Gamma', 1, np.dtype('float64')], 
-                              ['AllowRefinement', 1, np.dtype('int32')],
-                              ['VelocityDivergence', 1, np.dtype('float64')]]
-
-    self.snap_fields_nfields = len(self.snap_fields_exist)
-    self.snap_fields_rank = len(self.snap_fields_exist[0])
-
     # For a given particle type, these snap fields are present
 
     if self.flag_hdf5:

@@ -1,0 +1,2 @@
+
+SnapFieldsFile			snap_fields.txt
