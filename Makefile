@@ -1,9 +1,14 @@
 
-projection.so: projection.o
-	gcc -shared -Wl,-soname,projection.so -o projection.so projection.o
+CC = gcc
 
-projection.o: projection.c
-	gcc -c -fPIC projection.c -o projection.o
+all: binning.so projection.so
+
+%.so: %.o
+	$(CC) -shared -Wl,-soname,$@ -o $@ $<
+
+%.o: %.c
+	$(CC) -c -fPIC $< -o $@
 
 clean:
-	-rm -vf projection.so projection.o projection.pyc
+	rm -f *.o
+	rm -f *.so

@@ -226,14 +226,14 @@ def get_image(self, zoom, move, rotate, plot_option):
 
         # Load projection library
 
-        arr_1d = npct.ndpointer(dtype = np.dtype('float64'), ndim = 1, flags = 'CONTIGUOUS')
-        libp = npct.load_library("projection", ".")
-        libp.restype = None
-        libp.projection.argtypes = [arr_1d, arr_1d, arr_1d, arr_1d, arr_1d, c_int, arr_1d, arr_1d, c_int]
+        arr = npct.ndpointer(dtype = np.dtype('float64'), ndim = 1, flags = 'CONTIGUOUS')
+        lib = npct.load_library("projection", ".")
+        lib.restype = None
+        lib.projection.argtypes = [arr, arr, arr, arr, arr, c_int, arr, arr, c_int]
 
-        #Do projection
+        # Do projection
 
-        libp.projection(x, y, rho, hsml, ref, x.size, vals, sums, nbins)
+        lib.projection(x, y, rho, hsml, ref, x.size, vals, sums, nbins)
 
         # Get valid values
 
