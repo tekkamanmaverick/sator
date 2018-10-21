@@ -1,2 +1,2 @@
 
-SnapFieldsFile			snap_fields.txt
+SnapFieldsFile			snap_fields.txt			% File where the snap fields are stored (only relevant for snapshot format 1)
