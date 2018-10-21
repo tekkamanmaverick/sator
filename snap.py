@@ -46,10 +46,10 @@ def get_header(self, sub_num, verbose):
         self.flag_multiple = 1
         self.flag_hdf5 = 0
         self.snap_name = self.snap_path + '.' + str(sub_num)
-    elif os.path.exists(self.snap_path + '.' + str(sub_num) + 'hdf5'):
+    elif os.path.exists(self.snap_path + '.' + str(sub_num) + '.hdf5'):
         self.flag_multiple = 1
         self.flag_hdf5 = 1
-        self.snap_name = self.snap_path + '.' + str(sub_num) + 'hdf5'
+        self.snap_name = self.snap_path + '.' + str(sub_num) + '.hdf5'
     else:
         self.flag_error = 1
         return
@@ -217,29 +217,46 @@ def get_header(self, sub_num, verbose):
     if not self.header.type_list:
         self.flag_error = 2
 
+# Reead desired snap field from snapshot
+
 def get_snap_field(self, snap_field):
 
     flag = 0
 
     keys = self.snap_fields.keys()
 
+    # Check if desired snap field exists
+    
     if snap_field not in keys:
         flag = 1
         vals = 0
         return flag, vals
-    
+
+    # Check whether desired snap field has already been read
+
     if not self.snap_fields[snap_field]:
+
+        # Get header
 
         header = self.header
 
+        # Get particle type from selection in GUI
+
         part_type = int(self.part_type.get())
 
+        # Get total particle number for selected particle type
+
         ntot = header.npartTotal[part_type]
-        shape = [ntot]
+
+        # Distinguish between snapshot formats
 
         if self.flag_hdf5:
 
-            str_part_type = 'PartType' + str(part_type)
+            # Get dataset shape and type
+
+            shape = [ntot]
+
+            # Open file
 
             if self.flag_multiple:
                 snap_name = self.snap_path + '.0.hdf5'
@@ -248,24 +265,44 @@ def get_snap_field(self, snap_field):
 
             snap_file = h5py.File(snap_name, 'r')
 
+            # Get string for particle type
+
+            str_part_type = 'PartType' + str(part_type)
+
+            # Get particle group for desired particle type
+
             part = snap_file.get(str_part_type)
 
+            # Get dataset for desired snap field
+
             ds = part.get(snap_field)
+
+            # Get dataset type and shape
 
             ds_type = ds.dtype
             ds_shape = ds.shape
 
+            # Close snapshot
+
             snap_file.close()
-        
+
+            # Create dataset with corresponding shape
+
             if len(ds_shape) == 2:
                 sub_vals = ds_shape[1]
                 shape.append(sub_vals)
 
-            offset = 0
-
             vals = np.zeros(shape, dtype = ds_type)
 
+            # Initialize offset
+
+            offset = 0
+
+            # Go through all files and read dataset
+
             for i in np.arange(self.header.numfiles):
+
+                # Open file
 
                 if self.flag_multiple:
                     snap_name = self.snap_path + '.' + str(i) + '.hdf5'
@@ -274,19 +311,39 @@ def get_snap_field(self, snap_field):
 
                 snap_file = h5py.File(snap_name, 'r')
 
+                # Get particle group for desired particle type
+
                 part = snap_file.get(str_part_type)
+
+                # Continue if desired type exists
 
                 if part:
 
                     ds = part.get(snap_field)
 
+                    # Continue if desired field exists
+
                     if ds:
+
+                        # Get number of particles of desired type
 
                         npart = snap_file['Header'].attrs['NumPart_ThisFile'][part_type]
 
+                        # Read data in existing array
+
                         ds.read_direct(vals, np.s_[0 : npart], np.s_[offset : offset + npart])
 
+                        # Add number of particles read to offset
+
                         offset += npart
+
+                    else:
+                        return 1, 0
+
+                else:
+                    return 1, 0
+
+                # Close file
 
                 snap_file.close()
 
@@ -294,36 +351,64 @@ def get_snap_field(self, snap_field):
 
             tot_count = 0
 
+            # Go through all files and read data
+
             for i in np.arange(self.header.numfiles):
+
+                # Get header to obtain the number of types and the number of particles for each type
 
                 self.get_header(i, 0)
 
+                # Add header and SKIP blocks to offset in bytes
+
                 offset = self.header_size + 2 * np.dtype('int32').itemsize
+
+                # Go through all fields present in the snapshot
 
                 for j in np.arange(self.snap_fields_nfields):
 
                     field = self.snap_fields_exist[j][0]
 
+                    # Go through all particle types
+
                     for part_type in np.arange(self.header.numtypes):
 
                         npart = self.header.npart[part_type]
 
+                        # Continue if particles of the specified type and field exist
+
                         if npart:
-                            print self.snap_fields_dims[field]
+
+                            # Determine number of entries and bytes per entry
+
                             count = npart * self.snap_fields_dims[field]
                             bytes_per_element = self.snap_fields_dtypes[field].itemsize
 
+                            # Read data only for the desired field (and not any previous ones)
+
                             if field == snap_field:
+
+                                # Read data only for the desired particle type
 
                                 if part_type == int(self.part_type.get()):
 
+                                    # Go to position in file specified by offset
+
                                     self.snap_file.seek(offset)
+
+                                    # Read SKIP block
 
                                     dummy = struct.unpack('i', self.snap_file.read(4))[0]
 
+                                    # Determine data type
+
                                     dtype = self.snap_fields_dtypes[field]
 
+                                    # Do actual reading of a field
+
                                     data = np.fromfile(self.snap_file, dtype = dtype, count = count)
+
+                                    # If this is the first file, create data set, otherwise resize it
 
                                     if i == 0:
                                         vals = data
@@ -331,9 +416,14 @@ def get_snap_field(self, snap_field):
                                         vals.resize(vals.size + count)
                                         vals[tot_count : tot_count + count] = data
 
+                                    # Read SKIP block
+
                                     dummy = struct.unpack('i', self.snap_file.read(4))[0]
 
+                                    # Add particle number to the total count 
                                     tot_count += count
+
+                            # Add this field to the offset
 
                             offset += np.dtype('int32').itemsize
                             offset += count * bytes_per_element
@@ -341,16 +431,24 @@ def get_snap_field(self, snap_field):
 
                 self.snap_file.close()
 
+            # Reshape data set to represent its actual dimensions (e.g. 3 for coordinates)
+
             dims = self.snap_fields_dims[snap_field]
 
             if dims > 1:
                 vals = vals.reshape((tot_count / dims, dims))
-            
+
+        # return error flag and dataset
+                
         return flag, vals
 
     else:
 
+        # This snap field has already been read
+
         return flag, self.snap_fields[snap_field]
+
+# Error message if a snap field can not be read
 
 def snap_field_error(self, snap_field):
 
