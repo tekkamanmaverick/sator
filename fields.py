@@ -20,7 +20,7 @@ def init_fields(self):
         keys = part.keys()
 
         self.snap_fields = dict.fromkeys(keys, np.empty(0))
-        self.snap_fields_dims = {}
+        self.snap_fields_nentries = {}
         self.snap_fields_dtypes = {}
 
         for field in self.snap_fields:
@@ -28,9 +28,9 @@ def init_fields(self):
             ds = part.get(field)
 
             if len(ds.shape) == 1:
-                self.snap_fields_dims[field] = 1
+                self.snap_fields_nentries[field] = 1
             else:
-                self.snap_fields_dims[field] = ds.shape[1]
+                self.snap_fields_nentries[field] = ds.shape[1]
 
             self.snap_fields_dtypes[field] = ds.dtype
 
@@ -39,7 +39,7 @@ def init_fields(self):
     else:
 
         self.snap_fields = {}
-        self.snap_fields_dims = {}
+        self.snap_fields_nentries = {}
         self.snap_fields_dtypes = {}
 
         for i in np.arange(self.snap_fields_nfields):
@@ -47,15 +47,15 @@ def init_fields(self):
             snap_field = self.snap_fields_exist[i][0]
 
             self.snap_fields[snap_field] = np.empty(0)
-            self.snap_fields_dims[snap_field] = self.snap_fields_exist[i][1]
+            self.snap_fields_nentries[snap_field] = self.snap_fields_exist[i][1]
             self.snap_fields_dtypes[snap_field] = self.snap_fields_exist[i][2]
 
     # Inititalize refined fields for selected particle type
 
     self.refined_fields_nfields = len(self.refined_fields_exist)
-    self.refined_fields_entries = len(self.refined_fields_exist[0])
+    self.refined_fields_rank = len(self.refined_fields_exist[0])
     self.refined_fields = {}
-    self.refined_fields_dims = {}
+    self.refined_fields_nentries = {}
     self.refined_fields_dtypes = {}
 
     for i in np.arange(self.refined_fields_nfields):
@@ -63,9 +63,9 @@ def init_fields(self):
         field = self.refined_fields_exist[i][0]
         
         self.refined_fields[field] = np.empty(0)
-        self.refined_fields_dims[field] = self.refined_fields_exist[i][1]
+        self.refined_fields_nentries[field] = self.refined_fields_exist[i][1]
         self.refined_fields_dtypes[field] = self.refined_fields_exist[i][2]
-        
+
     if not self.refined_fields:
         return 1
     else:
@@ -76,7 +76,7 @@ def get_plot_fields(self):
     self.plot_fields = {}
 
     for field in self.refined_fields:
-        if self.refined_fields_dims[field] == 1:
+        if self.refined_fields_nentries[field] == 1:
             if self.refined_fields_dtypes[field] == np.dtype('float64'):
                 self.plot_fields[field] = self.refined_fields[field]
 

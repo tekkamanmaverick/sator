@@ -381,7 +381,7 @@ def get_snap_field(self, snap_field):
 
                             # Determine number of entries and bytes per entry
 
-                            count = npart * self.snap_fields_dims[field]
+                            count = npart * self.snap_fields_nentries[field]
                             bytes_per_element = self.snap_fields_dtypes[field].itemsize
 
                             # Read data only for the desired field (and not any previous ones)
@@ -433,7 +433,7 @@ def get_snap_field(self, snap_field):
 
             # Reshape data set to represent its actual dimensions (e.g. 3 for coordinates)
 
-            dims = self.snap_fields_dims[snap_field]
+            dims = self.snap_fields_nentries[snap_field]
 
             if dims > 1:
                 vals = vals.reshape((tot_count / dims, dims))

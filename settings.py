@@ -8,7 +8,7 @@ def get_settings(self):
 
     # Relative size of main window
 
-    self.win_fac = 0.8
+    self.win_fac = 0.5
 
     # Default DPI of matplotlib
 

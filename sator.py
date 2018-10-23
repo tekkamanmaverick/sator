@@ -155,7 +155,7 @@ class sator:
 
         if flag:
 
-            self.error_message('No refined fields for this particle type!')
+            self.error_message('No refined fields exist for this particle type!')
 
         else:
 
@@ -351,6 +351,7 @@ class sator:
 
             btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.get_pspace())
             btn.grid(row = 3, column = 1)
+
         # Set sub options frame flag
 
         self.flag_plot_sub_options_frame = 1
