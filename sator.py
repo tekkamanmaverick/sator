@@ -9,11 +9,14 @@ from utils import *
 
 class sator:
 
-    def __init__(self):
+    def __init__(self, par_file):
 
         # Initialize settings
 
-        self.get_settings()
+        self.get_settings(par_file)
+
+        if par_file:
+            return
 
         # Initialize flags
         
@@ -101,7 +104,7 @@ class sator:
 
         # Get header from snapshot
 
-        self.get_header(0, 1)
+        self.get_header(self.base.get(), self.snapnum.get(), 0, 1)
 
         # Check for read error
         
@@ -126,10 +129,10 @@ class sator:
         label = tk.Label(self.types_frame, text = 'Type')
         label.grid(row = 0, column = 0, sticky = 'w')
 
-        self.part_type = tk.StringVar()
-        self.part_type.set(self.header.type_list[0])
+        self.part_type_tk = tk.StringVar()
+        self.part_type_tk.set(self.header.type_list[0])
 
-        menu = tk.OptionMenu(self.types_frame, self.part_type, *self.header.type_list)
+        menu = tk.OptionMenu(self.types_frame, self.part_type_tk, *self.header.type_list)
         menu.grid(row = 0, column = 1, sticky = 'w')
 
         # Set types frame flag
@@ -139,7 +142,7 @@ class sator:
         # Create plot options frame
 
         self.create_plot_options_frame()
-        self.part_type.trace('w', lambda *args: self.create_plot_options_frame())
+        self.part_type_tk.trace('w', lambda *args: self.create_plot_options_frame())
 
     def create_plot_options_frame(self):
 
@@ -149,7 +152,7 @@ class sator:
 
         # Determine which snap fields and refined fields are available
 
-        flag = self.init_fields()
+        flag = self.init_fields(int(self.part_type_tk.get()))
 
         # Check for existence of refined fields
 
@@ -246,9 +249,9 @@ class sator:
             entry = tk.Entry(self.plot_left_sub_options_frame, textvariable = self.plot_sub_options[3], width = self.entry_width)
             entry.grid(row = 1, column = 1, sticky = 'w')
 
-            # Create entry for number of bins
+            # Create entry for number of pixels
 
-            label = tk.Label(self.plot_left_sub_options_frame, text = 'Bins')
+            label = tk.Label(self.plot_left_sub_options_frame, text = 'Pixels')
             label.grid(row = 2, column = 0, sticky = 'w')
 
             self.plot_sub_options.append(tk.StringVar())
@@ -259,7 +262,7 @@ class sator:
 
             # Create Go button
 
-            btn = tk.Button(self.plot_left_sub_options_frame, text = 'Go', command = lambda:self.get_image(0, 0, 0, plot_option))
+            btn = tk.Button(self.plot_left_sub_options_frame, text = 'Go', command = lambda:self.do_plot(plot_option, [0, 0, 0]))
             btn.grid(row = 3, column = 1)
 
             # Create right sub options frame
@@ -272,10 +275,10 @@ class sator:
             label = tk.Label(self.plot_right_sub_options_frame, text = 'Zoom')
             label.grid(row = 0, column = 0, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = '+', command = lambda:self.get_image(1, 0, 0, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = '+', command = lambda:self.do_plot(plot_option, [1, 0, 0]))
             btn.grid(row = 0, column = 1, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = '-', command = lambda:self.get_image(2, 0, 0, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = '-', command = lambda:self.do_plot(plot_option, [2, 0, 0]))
             btn.grid(row = 0, column = 2, sticky = 'w')
 
             # Create buttons for movement
@@ -283,16 +286,16 @@ class sator:
             label = tk.Label(self.plot_right_sub_options_frame, text = 'Move')
             label.grid(row = 1, column = 0, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'L', command = lambda:self.get_image(0, 1, 0, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'L', command = lambda:self.do_plot(plot_option, [0, 1, 0]))
             btn.grid(row = 1, column = 1, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'R', command = lambda:self.get_image(0, 2, 0, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'R', command = lambda:self.do_plot(plot_option, [0, 2, 0]))
             btn.grid(row = 1, column = 2, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'U', command = lambda:self.get_image(0, 3, 0, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'U', command = lambda:self.do_plot(plot_option, [0, 3, 0]))
             btn.grid(row = 1, column = 3, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'D', command = lambda:self.get_image(0, 4, 0, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'D', command = lambda:self.do_plot(plot_option, [0, 4, 0]))
             btn.grid(row = 1, column = 4, sticky = 'w')
 
             # Create buttons for rotation
@@ -300,16 +303,16 @@ class sator:
             label = tk.Label(self.plot_right_sub_options_frame, text = 'Rotate')
             label.grid(row = 2, column = 0, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'L', command = lambda:self.get_image(0, 0, 1, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'L', command = lambda:self.do_plot(plot_option, [0, 0, 1]))
             btn.grid(row = 2, column = 1, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'R', command = lambda:self.get_image(0, 0, 2, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'R', command = lambda:self.do_plot(plot_option, [0, 0, 2]))
             btn.grid(row = 2, column = 2, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'U', command = lambda:self.get_image(0, 0, 3, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'U', command = lambda:self.do_plot(plot_option, [0, 0, 3]))
             btn.grid(row = 2, column = 3, sticky = 'w')
 
-            btn = tk.Button(self.plot_right_sub_options_frame, text = 'D', command = lambda:self.get_image(0, 0, 4, plot_option))
+            btn = tk.Button(self.plot_right_sub_options_frame, text = 'D', command = lambda:self.do_plot(plot_option, [0, 0, 4]))
             btn.grid(row = 2, column = 4, sticky = 'w')
 
         elif plot_option == 'Phase Space':
@@ -336,9 +339,9 @@ class sator:
             menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[3], *self.plot_sub_options[2])
             menu.grid(row = 1, column = 1, sticky = 'w')
 
-            # Create entry for number of bins
+            # Create entry for number of pixels
 
-            label = tk.Label(self.plot_sub_options_frame, text = 'Bins')
+            label = tk.Label(self.plot_sub_options_frame, text = 'Pixels')
             label.grid(row = 2, column = 0, sticky = 'w')
 
             self.plot_sub_options.append(tk.StringVar())
@@ -349,12 +352,53 @@ class sator:
             
             # Create Go button
 
-            btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.get_pspace())
+            btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.do_plot(plot_option))
             btn.grid(row = 3, column = 1)
 
         # Set sub options frame flag
 
         self.flag_plot_sub_options_frame = 1
+
+    def do_plot(self, plot_option, args):
+
+        # Destroy frames
+
+        self.destroy_frames(0, 0, 0, 1)
+
+        # Initialize figure
+
+        self.fig = mp.figure.Figure(figsize = (self.fig_size, self.fig_size))
+        self.canvas = FigureCanvasTkAgg(self.fig, master = self.plot_frame)
+        self.canvas.get_tk_widget().grid()
+
+        # Do plot option dependent routines
+
+        if plot_option == 'Slice' or plot_option == 'Projection':
+
+            opts = self.plot_sub_options
+
+            refined_field = self.plot_sub_options[1].get()
+            width = float(self.plot_sub_options[3].get())
+            length_unit = self.plot_sub_options[2].get()
+            npixels = int(self.plot_sub_options[4].get())
+
+            width = self.get_image(plot_option, refined_field, width, length_unit, npixels, args)
+
+            self.plot_sub_options[3].set(str(width))
+
+        elif plot_option == 'Phase Space':
+
+            xfield = self.plot_sub_options[1].get()
+            yfield = self.plot_sub_options[3].get()
+            npixels = int(self.plot_sub_options[4].get())
+
+            self.get_pspace(xfield, yfield, npixels)
+
+        # Refresh and save figure
+
+        self.canvas.draw_idle()
+        self.fig.savefig('out.pdf')
+        self.flag_fig = 1
 
     # Function for destroying frames
 
@@ -377,23 +421,6 @@ class sator:
                 self.fig.clf()
                 self.canvas.get_tk_widget().destroy()
                 self.flag_fig = 0
-
-    # Called at the beginning of a plot routine
-
-    def init_fig(self):
-
-        self.destroy_frames(0, 0, 0, 1)
-
-        self.fig = mp.figure.Figure(figsize = (self.fig_size, self.fig_size))
-        self.canvas = FigureCanvasTkAgg(self.fig, master = self.plot_frame)
-        self.canvas.get_tk_widget().grid()
-
-    # Called at the end of a plot routine
-
-    def finish_fig(self):
-
-        self.canvas.draw_idle()
-        self.flag_fig = 1
 
     # Pop-up for error messages
 
@@ -450,9 +477,3 @@ sator.get_image = get_image
 # From pspace.py
 
 sator.get_pspace = get_pspace
-
-# Actual call of main class
-        
-sator = sator()
-
-sator.root.mainloop()

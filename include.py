@@ -2,8 +2,7 @@
 import numpy as np
 import numpy.ctypeslib as npct
 import matplotlib as mp
-mp.use('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasAgg, FigureCanvasTkAgg
 from mpl_toolkits.axes_grid1 import AxesGrid
 import os
 import h5py

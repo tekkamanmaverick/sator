@@ -2,25 +2,18 @@
 from include import *
 from utils import *
 
-def get_image(self, zoom, move, rotate, plot_option):
-
-    # This is required at the beginning of each plot routine
-
-    self.init_fig()
+def get_image(self, plot_option, refined_field, width, length_unit, npixels, args):
 
     # Extract parameters
 
-    opts = self.plot_sub_options
-
-    refined_field = opts[1].get()
-    length_unit = opts[2].get()
-    width = float(opts[3].get())
-    nbins = int(opts[4].get())
+    zoom = args[0]
+    move = args[1]
+    rotate = args[2]
 
     # Initialize some additional variables
 
     center_mode = 0
-    npoints = nbins**2
+    npoints = npixels**2
 
     if refined_field == 'gamma':
         log_plot = 0
@@ -79,8 +72,6 @@ def get_image(self, zoom, move, rotate, plot_option):
         elif zoom == 2:
             width /= self.zoom_fac
 
-        opts[3].set(str(width))
-
     # Determine normalized width
 
     norm_width = width * self.length_units[length_unit] / self.header.boxsize_cgs
@@ -125,8 +116,8 @@ def get_image(self, zoom, move, rotate, plot_option):
         y1 = -norm_width / 2. + self.norm_center[1]
         y2 = norm_width / 2. + self.norm_center[1]
 
-        px = np.linspace(x1, x2, nbins)
-        py = np.linspace(y1, y2, nbins)
+        px = np.linspace(x1, x2, npixels)
+        py = np.linspace(y1, y2, npixels)
 
         xv, yv = np.meshgrid(px, py, indexing='ij')
 
@@ -161,7 +152,7 @@ def get_image(self, zoom, move, rotate, plot_option):
 
     elif plot_option == 'Projection':
 
-        # Get index list for particles in 2 * sub box (due to rotation)
+        # Get index list for particles within r = 2 * sub box (due to rotation)
 
         rel_pos = np.zeros([self.norm_pos.size / 3, 3])
 
@@ -233,7 +224,7 @@ def get_image(self, zoom, move, rotate, plot_option):
 
         # Do projection
 
-        lib.projection(x, y, rho, hsml, ref, x.size, vals, sums, nbins)
+        lib.projection(x, y, rho, hsml, ref, x.size, vals, sums, npixels)
 
         # Get valid values
 
@@ -244,7 +235,7 @@ def get_image(self, zoom, move, rotate, plot_option):
 
     # Reshape
 
-    vals = np.reshape(vals, (nbins, nbins))
+    vals = np.reshape(vals, (npixels, npixels))
     vals = np.swapaxes(vals, 0, 1)
 
     # Draw image
@@ -267,14 +258,14 @@ def get_image(self, zoom, move, rotate, plot_option):
 
     # Add labels
 
-    text = 'Width: ' + str(width) + ' ' + length_unit
-
     offset_x = 0.01
     offset_y = 0.05
 
     self.fig.text(left + frac + offset_x, bottom + frac + offset_y, get_label(refined_field), rotation = 270)
 
     offset = 0.02
+
+    text = 'Width: ' + str(width) + ' ' + length_unit
 
     self.fig.text(0.5, offset, text, horizontalalignment = 'center')
 
@@ -287,6 +278,6 @@ def get_image(self, zoom, move, rotate, plot_option):
     cax.xaxis.set_ticks_position('top')
     cax.yaxis.set_label_position('right')
 
-    # This is needed at the end of each plot routine
+    # Return width (used for zooming)
 
-    self.finish_fig()
+    return width

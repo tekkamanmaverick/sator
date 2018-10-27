@@ -17,14 +17,14 @@ int imax(int a, int b)
     return b;
 }
 
-int ilimit(int a, int nbins)
+int ilimit(int a, int npixels)
 {
-  int b = imin(imax(a, 0), nbins - 1);
+  int b = imin(imax(a, 0), npixels - 1);
 
   return b;
 }
 
-void projection(double* x, double *y, double* rho, double* hsml, double* vals, int npart, double* proj, double* sums, int nbins)
+void projection(double* x, double* y, double* rho, double* hsml, double* vals, int npart, double* proj, double* sums, int npixels)
 {
   int n, i, j, idx;
   int min1, max1, min2, max2;
@@ -32,17 +32,17 @@ void projection(double* x, double *y, double* rho, double* hsml, double* vals, i
 
   for(n = 0; n < npart; n++)
     {
-      min1 = (x[n] + 0.5 - hsml[n]) * nbins;
-      min1 = ilimit(min1, nbins);
+      min1 = (x[n] + 0.5 - hsml[n]) * npixels;
+      min1 = ilimit(min1, npixels);
 
-      max1 = (x[n] + 0.5 + hsml[n]) * nbins;
-      max1 = ilimit(max1, nbins);
+      max1 = (x[n] + 0.5 + hsml[n]) * npixels;
+      max1 = ilimit(max1, npixels);
 
-      min2 = (y[n] + 0.5 - hsml[n]) * nbins;
-      min2 = ilimit(min2, nbins);
+      min2 = (y[n] + 0.5 - hsml[n]) * npixels;
+      min2 = ilimit(min2, npixels);
 
-      max2 = (y[n] + 0.5 + hsml[n]) * nbins;
-      max2 = ilimit(max2, nbins);
+      max2 = (y[n] + 0.5 + hsml[n]) * npixels;
+      max2 = ilimit(max2, npixels);
 
       psum = rho[n] * rho[n];
       pproj = psum * vals[n];
@@ -50,7 +50,7 @@ void projection(double* x, double *y, double* rho, double* hsml, double* vals, i
       for(i = min1; i <= max1; i++)
 	for(j = min2; j <= max2; j++)
 	  {
-	    idx = i * nbins + j;
+	    idx = i * npixels + j;
 
 	    proj[idx] += pproj;
 	    sums[idx] += psum;

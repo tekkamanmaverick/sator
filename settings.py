@@ -4,7 +4,7 @@ from utils import *
 
 # Initialize settings
 
-def get_settings(self):
+def get_settings(self, par_file):
 
     # Relative size of main window
 
@@ -58,8 +58,8 @@ def get_settings(self):
                                  ['divvel', 1, np.dtype('float64')]]
 
     # Read parameter file
-    
-    snap_fields_file = get_parameters()
+
+    snap_fields_file = get_parameters(par_file)
 
     # Get snap fields (only relevant for snapshot format 1)
 
@@ -70,14 +70,16 @@ def get_settings(self):
 
 # Read parameter file
 
-def get_parameters():
+def get_parameters(par_file):
 
-    nargs = len(sys.argv)
+    if not par_file:
 
-    if nargs < 2:
-        endrun('Not enough arguments specified on command line! Exiting...')
+        nargs = len(sys.argv)
 
-    par_file = sys.argv[1]
+        if nargs < 2:
+            endrun('Not enough arguments specified on command line! Exiting...')
+
+        par_file = sys.argv[1]
 
     f = open(par_file, 'r')
 

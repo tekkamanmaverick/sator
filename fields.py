@@ -3,17 +3,21 @@ from include import *
 from snap import *
 from utils import *
 
-def init_fields(self):
+def init_fields(self, part_type):
 
     self.flag_error = 0
+
+    # Set particle type
+
+    self.part_type = part_type
 
     # For a given particle type, these snap fields are present
 
     if self.flag_hdf5:
-        
+
         self.snap_file = h5py.File(self.snap_name, 'r')
 
-        str_part_type = 'PartType' + self.part_type.get()
+        str_part_type = 'PartType' + str(part_type)
 
         part = self.snap_file.get(str_part_type)
         

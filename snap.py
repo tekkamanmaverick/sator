@@ -2,7 +2,7 @@
 from include import *
 from utils import *
 
-def get_header(self, sub_num, verbose):
+def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
     self.header = header()
 
@@ -12,9 +12,6 @@ def get_header(self, sub_num, verbose):
     self.flag_error = 0
 
     # Determine whether a snapshot or an IC file is present
-
-    base = self.base.get()
-    snapnum = self.snapnum.get()
 
     if snapnum == 'ic':
         snap_string = snapnum
@@ -242,7 +239,7 @@ def get_snap_field(self, snap_field):
 
         # Get particle type from selection in GUI
 
-        part_type = int(self.part_type.get())
+        part_type = int(self.part_type)
 
         # Get total particle number for selected particle type
 
@@ -357,7 +354,7 @@ def get_snap_field(self, snap_field):
 
                 # Get header to obtain the number of types and the number of particles for each type
 
-                self.get_header(i, 0)
+                self.get_header(self.base.get(), self.snapnum.get(), i, 0)
 
                 # Add header and SKIP blocks to offset in bytes
 
