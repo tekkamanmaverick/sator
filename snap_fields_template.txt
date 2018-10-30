@@ -1,14 +1,14 @@
 
-Coordinates		3	d
-Velocities		3	d
-ParticleIDs		1	i
-Masses			1	d
-InternalEnergy		1	d
-Density			1	d
-Volume			1	d
-Acceleration 		3	d
-PressureGradient	3	d
-ChemicalAbundances	3	d
-Gamma			1	d
-AllowRefinement		1	i
-VelocityDivergence	1	d
+Coordinates		0,1		3	d
+Velocities		0,1		3	d
+ParticleIDs		0,1		1	i
+Masses			0,1		1	d
+InternalEnergy		0		1	d
+Density			0		1	d
+Volume			0		1	d
+Acceleration 		0,1		3	d
+PressureGradient	0		3	d
+ChemicalAbundances	0		3	d
+Gamma			0		1	d
+AllowRefinement		0		1	i
+VelocityDivergence	0		1	d

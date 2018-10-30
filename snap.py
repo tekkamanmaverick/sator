@@ -68,20 +68,13 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
     if self.flag_hdf5:
 
-        self.snap_file = h5py.File(self.snap_name, 'r')
-        h5py_header = self.snap_file['Header'].attrs
+        # Open file
 
-    else:
+        snap_file = h5py.File(self.snap_name, 'r')
 
-        self.snap_file = open(self.snap_name, mode = 'rb')
+        h5py_header = snap_file['Header'].attrs
 
-        self.header_size = struct.unpack('i', self.snap_file.read(4))[0]
-        binary = self.snap_file.read(self.header_size)
-        self.header_size = struct.unpack('i', self.snap_file.read(4))[0]
-
-    # Save header data
-
-    if self.flag_hdf5:
+        # Save header data
 
         self.header.npart = h5py_header['NumPart_ThisFile']
         self.header.mass = h5py_header['MassTable']
@@ -105,12 +98,26 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
         # Some additional variables for format 3
 
-        self.header.numtypes = self.snap_file['Config'].attrs.get('NTYPES', default = 6)
+        self.header.numtypes = snap_file['Config'].attrs.get('NTYPES', default = 6)
         self.header.unit_length = h5py_header['UnitLength_in_cm']
         self.header.unit_mass = h5py_header['UnitMass_in_g']
         self.header.unit_velocity = h5py_header['UnitVelocity_in_cm_per_s']
 
+        # Close file
+
+        snap_file.close()
+
     else:
+
+        # Open file
+
+        snap_file = open(self.snap_name, 'rb')
+
+        # Read header
+
+        self.header_size = struct.unpack('i', snap_file.read(4))[0]
+        binary = snap_file.read(self.header_size)
+        self.header_size = struct.unpack('i', snap_file.read(4))[0]
 
         # Set header data types
 
@@ -203,6 +210,10 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
         self.header.unit_mass = 1.989e43
         self.header.unit_velocity = 1e5
 
+        # Close file
+
+        snap_file.close()
+
     # Some additional variables for all snapshot formats
 
     self.header.unit_time = self.header.unit_length / self.header.unit_velocity
@@ -231,9 +242,7 @@ def get_snap_field(self, snap_field):
     # Check if desired snap field exists
     
     if snap_field not in keys:
-        flag = 1
-        vals = 0
-        return flag, vals
+        return 1, 0
 
     # Check whether desired snap field has already been read
 
@@ -358,9 +367,13 @@ def get_snap_field(self, snap_field):
 
             for i in np.arange(self.header.numfiles):
 
-                # Get header to obtain the number of types and the number of particles for each type
+                # Get header for this file to obtain the number of types and the number of particles for each type
 
                 self.get_header(self.base, self.snapnum, i, 0)
+
+                # Open file
+
+                snap_file = open(self.snap_name, 'rb')
 
                 # Add header and SKIP blocks to offset in bytes
 
@@ -372,9 +385,11 @@ def get_snap_field(self, snap_field):
 
                     field = self.snap_fields_exist[j][0]
 
-                    # Go through all particle types
+                    # Go through particle types that are present for the selected field
 
-                    for part_type in np.arange(self.header.numtypes):
+                    for part_type in self.snap_fields_types[field]:
+
+                        # Get particle number for selected type
 
                         npart = self.header.npart[part_type]
 
@@ -385,6 +400,7 @@ def get_snap_field(self, snap_field):
                             # Determine number of entries and bytes per entry
 
                             count = npart * self.snap_fields_nentries[field]
+
                             bytes_per_element = self.snap_fields_dtypes[field].itemsize
 
                             # Read data only for the desired field (and not any previous ones)
@@ -397,11 +413,11 @@ def get_snap_field(self, snap_field):
 
                                     # Go to position in file specified by offset
 
-                                    self.snap_file.seek(offset)
+                                    snap_file.seek(offset)
 
                                     # Read SKIP block
 
-                                    dummy = struct.unpack('i', self.snap_file.read(4))[0]
+                                    snap_file.read(np.dtype('int32').itemsize)
 
                                     # Determine data type
 
@@ -409,7 +425,7 @@ def get_snap_field(self, snap_field):
 
                                     # Do actual reading of a field
 
-                                    data = np.fromfile(self.snap_file, dtype = dtype, count = count)
+                                    data = np.fromfile(snap_file, dtype = dtype, count = count)
 
                                     # If this is the first file, create data set, otherwise resize it
 
@@ -421,25 +437,30 @@ def get_snap_field(self, snap_field):
 
                                     # Read SKIP block
 
-                                    dummy = struct.unpack('i', self.snap_file.read(4))[0]
+                                    snap_file.read(np.dtype('int32').itemsize)
 
-                                    # Add particle number to the total count 
+                                    # Add particle number to the total count
+
                                     tot_count += count
 
                             # Add this field to the offset
 
-                            offset += np.dtype('int32').itemsize
                             offset += count * bytes_per_element
-                            offset += np.dtype('int32').itemsize
 
-                self.snap_file.close()
+                    # Add SKIP blocks to offset
 
-            # Reshape data set to represent its actual dimensions (e.g. 3 for coordinates)
+                    offset += 2 * np.dtype('int32').itemsize
 
-            dims = self.snap_fields_nentries[snap_field]
+                # Close file
 
-            if dims > 1:
-                vals = vals.reshape((tot_count / dims, dims))
+                snap_file.close()
+
+            # Reshape data set to represent the number of entries (e.g. 3 for coordinates)
+
+            nentries = self.snap_fields_nentries[snap_field]
+
+            if nentries > 1:
+                vals = vals.reshape((tot_count / nentries, nentries))
 
         # return error flag and dataset
                 

@@ -15,11 +15,11 @@ def init_fields(self, part_type):
 
     if self.flag_hdf5:
 
-        self.snap_file = h5py.File(self.snap_name, 'r')
+        snap_file = h5py.File(self.snap_name, 'r')
 
         str_part_type = 'PartType' + str(part_type)
 
-        part = self.snap_file.get(str_part_type)
+        part = snap_file.get(str_part_type)
         
         keys = part.keys()
 
@@ -38,11 +38,12 @@ def init_fields(self, part_type):
 
             self.snap_fields_dtypes[field] = ds.dtype
 
-        self.snap_file.close
+        snap_file.close()
 
     else:
 
         self.snap_fields = {}
+        self.snap_fields_types = {}
         self.snap_fields_nentries = {}
         self.snap_fields_dtypes = {}
 
@@ -51,8 +52,9 @@ def init_fields(self, part_type):
             snap_field = self.snap_fields_exist[i][0]
 
             self.snap_fields[snap_field] = np.empty(0)
-            self.snap_fields_nentries[snap_field] = self.snap_fields_exist[i][1]
-            self.snap_fields_dtypes[snap_field] = self.snap_fields_exist[i][2]
+            self.snap_fields_types[snap_field] = self.snap_fields_exist[i][1]
+            self.snap_fields_nentries[snap_field] = self.snap_fields_exist[i][2]
+            self.snap_fields_dtypes[snap_field] = self.snap_fields_exist[i][3]
 
     # Inititalize refined fields for selected particle type
 

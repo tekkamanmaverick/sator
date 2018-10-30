@@ -109,41 +109,51 @@ def read_snap_fields(snap_fields_file):
     f = open(snap_fields_file, 'r')
 
     n = 0
-    refined_fields_exist = []
+    snap_fields_exist = []
 
     for line in f:
 
         columns = line.split()
 
         if columns:
-            refined_fields_exist.append([])
+            snap_fields_exist.append([])
 
             for i in np.arange(len(columns)):
-                refined_fields_exist[n].append(columns[i])
+                snap_fields_exist[n].append(columns[i])
             n += 1
 
-    # Replace dimensionality string with an integer
+    # Save list of particle types for which the fields are present
 
     idx = 1
 
-    for entry in refined_fields_exist:
-        entry[idx] = int(entry[idx])
+    for entry in snap_fields_exist:
 
-    # Replace data type with the corresponding data type
+        tl = entry[idx]
+
+        tl = tl.split(',')
+
+        tl = np.array(tl)
+
+        tl = tl.astype(np.dtype('int32'))
+
+        tl = np.sort(tl)
+
+        entry[idx] = tl
+
+    # Replace dimensionality string with an integer
 
     idx = 2
 
-    for entry in refined_fields_exist:
+    for entry in snap_fields_exist:
+        entry[idx] = int(entry[idx])
 
-        if entry[idx] == 'i':
-            entry[idx] = np.dtype('int32')
-        elif entry[idx] == 'l':
-            entry[idx] = np.dtype('int64')
-        elif entry[idx] == 'f':
-            entry[idx] = np.dtype('float32')
-        else:
-            entry[idx] = np.dtype('float64')
+    # Replace data type string with numpy data type
+
+    idx = 3
+
+    for entry in snap_fields_exist:
+        entry[idx] = np.dtype(entry[idx])
 
     f.close()
 
-    return refined_fields_exist
+    return snap_fields_exist
