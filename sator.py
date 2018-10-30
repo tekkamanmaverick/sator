@@ -62,19 +62,19 @@ class sator:
         label = tk.Label(self.snap_frame, text = 'Base')
         label.grid(row = 1, column = 0, sticky = 'w')
 
-        self.base = tk.StringVar()
-        self.base.set('test')
+        self.base_tk = tk.StringVar()
+        self.base_tk.set('test')
 
-        entry = tk.Entry(self.snap_frame, textvariable = self.base)
+        entry = tk.Entry(self.snap_frame, textvariable = self.base_tk)
         entry.grid(row = 1, column = 1, sticky = 'w')
 
         label = tk.Label(self.snap_frame, text = '#')
         label.grid(row = 2, column = 0, sticky = 'w')
 
-        self.snapnum = tk.StringVar()
-        self.snapnum.set('1')
+        self.snapnum_tk = tk.StringVar()
+        self.snapnum_tk.set('1')
 
-        entry = tk.Entry(self.snap_frame, textvariable = self.snapnum)
+        entry = tk.Entry(self.snap_frame, textvariable = self.snapnum_tk)
         entry.grid(row = 2, column = 1, sticky = 'w')
 
         btn = tk.Button(self.snap_frame, text = 'Open', command = lambda:self.open_snapshot())
@@ -104,7 +104,7 @@ class sator:
 
         # Get header from snapshot
 
-        self.get_header(self.base.get(), self.snapnum.get(), 0, 1)
+        self.get_header(self.base_tk.get(), self.snapnum_tk.get(), 0, 1)
 
         # Check for read error
         
@@ -352,7 +352,7 @@ class sator:
             
             # Create Go button
 
-            btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.do_plot(plot_option))
+            btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.do_plot(plot_option, 0))
             btn.grid(row = 3, column = 1)
 
         # Set sub options frame flag
@@ -477,3 +477,9 @@ sator.get_image = get_image
 # From pspace.py
 
 sator.get_pspace = get_pspace
+
+# From utils.py
+
+sator.get_center = get_center
+sator.init_figure = init_figure
+sator.finish_figure = finish_figure

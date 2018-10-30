@@ -6,9 +6,14 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
 
     # Extract parameters
 
-    zoom = args[0]
-    move = args[1]
-    rotate = args[2]
+    if args:
+        zoom = args[0]
+        move = args[1]
+        rotate = args[2]
+    else:
+        zoom = 0
+        move = 0
+        rotate = 0
 
     # Initialize some additional variables
 
@@ -38,7 +43,10 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
         if flag:
             return
 
-        self.center = get_center(pos, nh, 0)
+        flag = self.get_center(0)
+
+        if flag:
+            return
 
         self.norm_center = np.zeros(3)
 

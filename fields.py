@@ -70,6 +70,12 @@ def init_fields(self, part_type):
         self.refined_fields_nentries[field] = self.refined_fields_exist[i][1]
         self.refined_fields_dtypes[field] = self.refined_fields_exist[i][2]
 
+    # If a new type is read, this will be the first time the plot is created
+        
+    self.flag_plot_first = 1
+
+    # Return an error if no refined fields are present
+
     if not self.refined_fields:
         return 1
     else:
@@ -131,8 +137,6 @@ def get_refined_field(self, refined_field):
                 vals *= fac
 
         elif refined_field == 'id':
-
-            refined_field_list.append(refined_field)
 
             snap_field = 'ParticleIDs'
 

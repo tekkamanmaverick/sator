@@ -1,18 +1,38 @@
 
 from include import *
 
-def get_center(pos, nh, center_mode):
+def get_center(self, center_mode):
 
-    center = np.zeros(3)
+    self.center = np.zeros(3)
+
+    flag, pos = self.get_refined_field('pos')
+
+    if flag:
+        return 1
 
     if center_mode == 0:
 
-        idx = np.argmax(nh)
+        flag, nh = self.get_refined_field('nh')
+
+        if flag:
+            return 1
+
+        weight = nh * nh
+        
+        weight_sum = np.sum(weight)
 
         for i in np.arange(3):
-            center[i] = pos[idx, i]
+            self.center[i] = np.sum(weight * pos[:, i]) / weight_sum
 
-    return center
+    elif center_mode == 1:
+
+        for i in np.arange(3):
+            self.center[i] = self.header.boxsize_cgs / 2.
+
+    else:
+        return 1
+
+    return 0
             
 def do_rotation(pos, alpha, beta, center):
 
@@ -67,6 +87,16 @@ def do_rotation(pos, alpha, beta, center):
         rot_pos[:, i] += center[i]
 
     return rot_pos
+
+def init_figure(self, figsize):
+
+    self.fig = mp.figure.Figure(figsize = [figsize, figsize])
+
+    self.canvas = FigureCanvasAgg(self.fig)
+
+def finish_figure(self):
+
+    self.canvas.print_figure('out.pdf')
 
 def get_label(field):
 

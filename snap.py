@@ -4,6 +4,11 @@ from utils import *
 
 def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
+    # Initialize some variables
+
+    self.base = base
+    self.snapnum = snapnum
+
     self.header = header()
 
     if verbose:
@@ -20,13 +25,13 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
     # Check if snapshot is in a subdirectory
 
-    self.snap_path = data_dir + '/' + base + '/' + 'snapdir_' + snap_string
+    self.snap_path = self.data_dir + '/' + base + '/' + 'snapdir_' + snap_string
 
     if os.path.isdir(self.snap_path):
         self.flag_subdir = 1
     else:
         self.flag_subdir = 0
-        self.snap_path = data_dir + '/' + base
+        self.snap_path = self.data_dir + '/' + base
 
     # Check snapshot format and if it is distributed among multiple files
 
@@ -35,6 +40,7 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
     if os.path.exists(self.snap_path):
         self.flag_multiple = 0
         self.flag_hdf5 = 0
+        self.snap_name = self.snap_path
     elif os.path.exists(self.snap_path + '.hdf5'):
         self.flag_multiple = 0
         self.flag_hdf5 = 1
@@ -354,7 +360,7 @@ def get_snap_field(self, snap_field):
 
                 # Get header to obtain the number of types and the number of particles for each type
 
-                self.get_header(self.base.get(), self.snapnum.get(), i, 0)
+                self.get_header(self.base, self.snapnum, i, 0)
 
                 # Add header and SKIP blocks to offset in bytes
 
@@ -387,7 +393,7 @@ def get_snap_field(self, snap_field):
 
                                 # Read data only for the desired particle type
 
-                                if part_type == int(self.part_type.get()):
+                                if part_type == self.part_type:
 
                                     # Go to position in file specified by offset
 

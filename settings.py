@@ -6,9 +6,13 @@ from utils import *
 
 def get_settings(self, par_file):
 
+    # Directory of snapshot data
+
+    self.data_dir = os.environ['DATADIR']
+
     # Relative size of main window
 
-    self.win_fac = 0.5
+    self.win_fac = 0.8
 
     # Default DPI of matplotlib
 
@@ -44,6 +48,7 @@ def get_settings(self, par_file):
                                  ['vel', 3, np.dtype('float64')],
                                  ['id', 1, np.dtype('int32')],
                                  ['mass', 1, np.dtype('float64')],
+                                 ['u', 1, np.dtype('float64')],
                                  ['rho', 1, np.dtype('float64')],
                                  ['nh', 1, np.dtype('float64')],
                                  ['temp', 1, np.dtype('float64')],

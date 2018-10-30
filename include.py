@@ -40,5 +40,3 @@ class header:
     def __init__(self):
 
         header = 0
-
-data_dir = os.environ['DATADIR']
