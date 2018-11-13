@@ -69,7 +69,7 @@ def init_fields(self, part_type):
         field = self.refined_fields_exist[i][0]
         
         self.refined_fields[field] = np.empty(0)
-        self.refined_fields_nentries[field] = self.refined_fields_exist[i][1]
+        self.refined_fields_nentries[field] = int(self.refined_fields_exist[i][1])
         self.refined_fields_dtypes[field] = self.refined_fields_exist[i][2]
 
     # If a new type is read, this will be the first time the plot is created
@@ -89,7 +89,7 @@ def get_plot_fields(self):
 
     for field in self.refined_fields:
         if self.refined_fields_nentries[field] == 1:
-            if self.refined_fields_dtypes[field] == np.dtype('float64'):
+            if self.refined_fields_dtypes[field] == 'float64':
                 self.plot_fields[field] = self.refined_fields[field]
 
 def get_refined_field(self, refined_field):
@@ -125,6 +125,29 @@ def get_refined_field(self, refined_field):
             else:
                 fac = 1. / h * unit_length
                 vals *= fac
+
+        elif refined_field == 'r':
+
+            snap_field = 'Coordinates'
+
+            flag, pos = self.get_snap_field(snap_field)
+            
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = 1. / h * unit_length
+                pos *= fac
+
+                self.get_center(0)
+
+                r2 = np.zeros(pos.size / 3)
+
+                for i in np.arange(3):
+                    r2 += (pos[:, i] - self.center[i])**2
+
+                r = np.sqrt(r2)
+
+                vals = r
 
         elif refined_field == 'vel':
 

@@ -2,7 +2,7 @@
 from include import *
 from utils import *
 
-def get_pspace(self, xfield, yfield, npixels):
+def get_lines(self, xfield, yfield, npixels):
 
     # Some additional settings
 
@@ -65,27 +65,22 @@ def get_pspace(self, xfield, yfield, npixels):
     xmin = np.min(x)
     xmax = np.max(x)
 
-    ymin = np.min(y)
-    ymax = np.max(y)
-
     # Get indices for all cells
 
     xidx = (x - xmin) * npixels / (xmax - xmin)
-    yidx = (y - ymin) * npixels / (ymax - ymin)
 
     # Convert to integer
 
     xidx = xidx.astype(dtype = np.dtype('int32'))
-    yidx = yidx.astype(dtype = np.dtype('int32'))
 
     # Limit integers
 
     xidx = np.minimum(xidx, npixels - 1)
-    yidx = np.minimum(yidx, npixels - 1)
 
-    # Intitialize results array
+    # Intitialize results arrays
 
-    vals = np.zeros(npixels**2)
+    sums = np.zeros(npixels)
+    yvals = np.zeros(npixels)
 
     # Load binning library
 
@@ -93,34 +88,25 @@ def get_pspace(self, xfield, yfield, npixels):
     arr_d = npct.ndpointer(dtype = np.dtype('float64'), ndim = 1, flags = 'CONTIGUOUS')
     lib = npct.load_library("binning", ".")
     lib.restype = None
-    lib.binning_2d.argtypes = [arr_i, arr_i, arr_d, c_int, arr_d, c_int]
+    lib.binning_1d.argtypes = [arr_i, arr_d, arr_d, c_int, arr_d, arr_d, c_int]
 
-    # Bin particles into vals array
+    # Bin particles into yvals array
 
-    lib.binning_2d(xidx, yidx, mass, npart, vals, npixels)
+    lib.binning_1d(xidx, mass, y, npart, sums, yvals, npixels)
 
     # Divide by total mass
 
-    tot_mass = np.sum(vals)
-    idx = vals > 0.
-    vals[idx] /= tot_mass
-
-    # Take logarithm of fractional mass
-
-    vals[idx] = np.log10(vals[idx])
+    idx = sums != 0
+    yvals[idx] /= sums[idx]
 
     # Set empty pixels to nan
 
-    idx = vals == 0.
-    vals[idx] = np.nan
+    idx = sums == 0.
+    yvals[idx] = np.nan
 
-    # Reshape
+    # Set x-axis range
 
-    vals = np.reshape(vals, (npixels, npixels))
-    vals = np.swapaxes(vals, 0, 1)
+    xvals = xmin + (xmax - xmin) * np.arange(npixels) / npixels
 
-    # Get boundaries
-
-    bds = [xmin, xmax, ymin, ymax]
-
-    return vals, bds
+    return xvals, yvals
+    

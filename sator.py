@@ -5,6 +5,8 @@ from snap import *
 from fields import *
 from image import *
 from pspace import *
+from lines import *
+from plots import *
 from utils import *
 
 class sator:
@@ -164,7 +166,7 @@ class sator:
 
             # Determine plot options
 
-            plot_options = ['Slice', 'Projection', 'Phase Space']
+            plot_options = ['Slice', 'Projection', 'Phase Space', 'Lines']
 
             # Create plot options frame
 
@@ -355,6 +357,46 @@ class sator:
             btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.do_plot(plot_option, 0))
             btn.grid(row = 3, column = 1)
 
+        elif plot_option == 'Lines':
+
+            # Create menu for fields
+
+            label = tk.Label(self.plot_sub_options_frame, text = 'X Field')
+            label.grid(row = 0, column = 0, sticky = 'w')
+
+            self.plot_sub_options.append(self.plot_fields.keys())
+            self.plot_sub_options.append(tk.StringVar())
+            self.plot_sub_options[1].set(self.plot_sub_options[0][0])
+
+            menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[1], *self.plot_sub_options[0])
+            menu.grid(row = 0, column = 1, sticky = 'w')
+
+            label = tk.Label(self.plot_sub_options_frame, text = 'Y Field')
+            label.grid(row = 1, column = 0, sticky = 'w')
+
+            self.plot_sub_options.append(self.plot_fields.keys())
+            self.plot_sub_options.append(tk.StringVar())
+            self.plot_sub_options[3].set(self.plot_sub_options[2][0])
+
+            menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[3], *self.plot_sub_options[2])
+            menu.grid(row = 1, column = 1, sticky = 'w')
+
+            # Create entry for number of pixels
+
+            label = tk.Label(self.plot_sub_options_frame, text = 'Pixels')
+            label.grid(row = 2, column = 0, sticky = 'w')
+
+            self.plot_sub_options.append(tk.StringVar())
+            self.plot_sub_options[4].set(500)
+
+            entry = tk.Entry(self.plot_sub_options_frame, textvariable = self.plot_sub_options[4], width = self.entry_width)
+            entry.grid(row = 2, column = 1, sticky = 'w')
+            
+            # Create Go button
+
+            btn = tk.Button(self.plot_sub_options_frame, text = 'Go', command = lambda:self.do_plot(plot_option, 0))
+            btn.grid(row = 3, column = 1)
+
         # Set sub options frame flag
 
         self.flag_plot_sub_options_frame = 1
@@ -392,7 +434,19 @@ class sator:
             yfield = self.plot_sub_options[3].get()
             npixels = int(self.plot_sub_options[4].get())
 
-            self.get_pspace(xfield, yfield, npixels)
+            vals, bds = self.get_pspace(xfield, yfield, npixels)
+
+            self.plot_pspace(self.fig, vals, bds, xfield, yfield)
+            
+        elif plot_option == 'Lines':
+
+            xfield = self.plot_sub_options[1].get()
+            yfield = self.plot_sub_options[3].get()
+            npixels = int(self.plot_sub_options[4].get())
+
+            x, y = self.get_lines(self.fig, xfield, yfield, npixels)
+
+            self.plot_lines(x, y, xfield, yfield)
 
         # Refresh and save figure
 
@@ -477,6 +531,15 @@ sator.get_image = get_image
 # From pspace.py
 
 sator.get_pspace = get_pspace
+
+# From lines.py
+
+sator.get_lines = get_lines
+
+# From plots.py
+
+sator.plot_pspace = plot_pspace
+sator.plot_lines = plot_lines
 
 # From utils.py
 
