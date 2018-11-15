@@ -544,5 +544,6 @@ sator.plot_lines = plot_lines
 # From utils.py
 
 sator.get_center = get_center
+sator.center_and_rotate = center_and_rotate
 sator.init_figure = init_figure
 sator.finish_figure = finish_figure

@@ -265,6 +265,19 @@ def get_refined_field(self, refined_field):
                 fac = (1. / h)**3 * unit_length**3
                 vals *= fac
 
+        elif refined_field == 'h':
+
+            snap_field = 'Volume'
+
+            flag, vals = self.get_snap_field(snap_field)
+
+            if flag:
+                self.snap_field_error(snap_field)
+            else:
+                fac = (1. / h)**3 * unit_length**3
+                vals *= fac
+                vals = (3 * vals / 4. / np.pi)**(1. / 3.)
+
         elif refined_field == 'gravacc':
 
             snap_field = 'Acceleration'

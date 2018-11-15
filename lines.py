@@ -27,7 +27,7 @@ def get_lines(self, xfield, yfield, npixels):
 
     if flag:
         return
-
+    
     # Read mass
 
     flag, mass = self.get_refined_field('mass')

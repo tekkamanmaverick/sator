@@ -3,9 +3,9 @@ import os, sys
 
 sys.path.append(os.getenv('SATORDIR'))
 
-from mpl_toolkits.axes_grid1 import ImageGrid
-
 from sator import *
+
+mp.rcParams.update({'font.size': 18})
 
 nfiles = 4
 nrows = 2
@@ -14,10 +14,10 @@ ncols = 2
 xfield = 'nh'
 yfield = 'temp'
 
-xsize = 15.
+xsize = 17.
 ysize = 20.
 
-bottom = 0.09
+bottom = 0.1
 left = 0.05
 right = 0.02
 top = 0.02
@@ -26,7 +26,7 @@ fig = mp.figure.Figure(figsize = (xsize, ysize))
 
 canvas = FigureCanvasTkAgg(fig)
 
-grid = ImageGrid(fig, [left, bottom, 1. - left - right, 1. - bottom - top], nrows_ncols = (nrows, ncols), axes_pad = 0., aspect = False)
+grid = AxesGrid(fig, [left, bottom, 1. - left - right, 1. - bottom - top], nrows_ncols = (nrows, ncols), axes_pad = 0., aspect = False)
 
 objs = list()
 
@@ -65,7 +65,7 @@ for i in np.arange(nfiles):
 height = 0.015
 width = 0.3
 
-cax = fig.add_axes([0.5 - width / 2., 0.03, width, height])
+cax = fig.add_axes([0.5 - width / 2., 0.04, width, height])
 
 fig.colorbar(im, cax = cax, orientation = 'horizontal')
 

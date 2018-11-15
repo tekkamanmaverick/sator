@@ -88,6 +88,73 @@ def do_rotation(pos, alpha, beta, center):
 
     return rot_pos
 
+def center_and_rotate(self, pos, vel, mass):
+
+    npart = mass.size
+
+    # Center box
+    
+    self.get_center(0)
+
+    vel_cm = np.zeros(3)
+    
+    for i in np.arange(3):
+        pos[:, i] -= self.center[i]
+
+    # Select particles in spherical region
+
+    r = np.sqrt(pos[:, 0]**2 + pos[:, 1]**2 + pos[:, 2]**2)
+
+    flag, h = self.get_refined_field('h')
+
+    if flag:
+        return
+
+    idx = r < 100. * np.min(h)
+
+    npart = mass[idx].size
+
+    # Get velocity of center of mass
+
+    for i in np.arange(3):
+        vel_cm[i] = np.sum(mass[idx] * vel[idx, i])
+
+    tot_mass = np.sum(mass[idx])
+
+    vel_cm /= tot_mass
+
+    # Subtract from velocities
+    
+    dvel = np.zeros((npart, 3))
+
+    for i in np.arange(3):
+        dvel[:, i] = vel[idx, i] - vel_cm[i]
+
+    # Get angular momentum vector
+        
+    vec = np.zeros(3)
+
+    vec[0] = np.sum(mass[idx] * (pos[idx, 1] * dvel[:, 2] - pos[idx, 2] * dvel[:, 1]))
+    vec[1] = np.sum(mass[idx] * (pos[idx, 2] * dvel[:, 0] - pos[idx, 0] * dvel[:, 2]))
+    vec[2] = np.sum(mass[idx] * (pos[idx, 0] * dvel[:, 1] - pos[idx, 1] * dvel[:, 0]))
+
+    r = np.sqrt(vec[0]**2 + vec[1]**2 + vec[2]**2)
+
+    vec /= r
+
+    # Get rotation angles
+    
+    alpha = np.arccos(vec[2] / np.sqrt(vec[1]**2 + vec[2]**2))
+
+    if vec[1] >= 0.:
+        alpha *= -1.
+
+    beta = np.arcsin(vec[0])
+
+    pos = do_rotation(pos, alpha, beta, np.zeros(3))
+
+    return pos, vel
+        
 def init_figure(self, figsize):
 
     self.fig = mp.figure.Figure(figsize = [figsize, figsize])

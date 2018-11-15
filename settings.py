@@ -54,6 +54,7 @@ def get_settings(self, par_file):
                                  ['nh', 1, 'float64'],
                                  ['temp', 1, 'float64'],
                                  ['vol', 1, 'float64'],
+                                 ['h', 1, 'float64'],
                                  ['gravacc', 3, 'float64'],
                                  ['gradp', 3, 'float64'],
                                  ['abhm', 1, 'float64'],

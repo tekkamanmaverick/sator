@@ -32,6 +32,18 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
     if flag:
         return
 
+    flag, vel = self.get_refined_field('vel')
+
+    if flag:
+        return
+
+    flag, mass = self.get_refined_field('mass')
+
+    if flag:
+        return
+
+    pos, vel = self.center_and_rotate(pos, vel, mass)
+
     # Do this the first time the plot is created
 
     if self.flag_plot_first:
@@ -190,11 +202,6 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
 
         x = np.array(rot_pos[:, 0])
         y = np.array(rot_pos[:, 1])
-
-        flag, mass = self.get_refined_field('mass')
-
-        if flag:
-            return
 
         mass = mass[idx]
 
