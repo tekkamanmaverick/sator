@@ -1,6 +1,6 @@
 **Installation**
 
-1. If not already present, install Python. Usually default installations of Python already include the required modules, so no additional steps should be necessary. These modules are required:
+1. If not already present, install Python 2. Usually default installations of Python 2 already include the required modules, so no additional steps should be necessary. These modules are used:
 	* numpy
 	* scipy
 	* matplotlib
@@ -19,6 +19,6 @@ Please report any bugs to the Issues site, email me at *tgreif@uni-heidelberg.de
 
 **Fields in Sator**
 
-In Sator there are two different kinds of fields: *snap fields* and *refined fields*. The former are fields as they exist in the snapshots, e.g. *Coordinates* in an HDF5 file. The *refined fields* are computed from the *snap fields* and are typically used for plots, e.g. the temperature (refined field *temp*) is computed from the *InternalEnergy*, as well as *Gamma* and *ChemicalAbundances*, if the latter two are present in the snapshot. A new refined field, together with its dimensionality and data type, can be specified in settings.py. Its calculation from the *snap fields* is defined in fields.py in the routine *get_refined_field*.
+In Sator there are two different kinds of fields: snapshot fields and refined fields. The former are fields as they exist in the snapshots, e.g. *Coordinates* in an HDF5 file. The refined fields are computed from the snapshot fields and are typically used for plots, e.g. the temperature (refined field *temp*) is computed from the *InternalEnergy*, as well as *Gamma* and *ChemicalAbundances*, if the latter two are present in the snapshot. A new refined field, together with its dimensionality and data type, can be specified in settings.py. Its calculation from the snapshot fields is defined in fields.py in the routine *get_refined_field*.
 
 For snapshot format 1, the snap fields, their properties and their order in the snapshot must be defined in a file specified by the parameter `SnapFieldsFile` in the paramater file.
