@@ -7,10 +7,12 @@ sator.get_header('test', '1')
 
 sator.init_fields(0)
 
-sator.fig = mp.figure.Figure()
+fig = mp.figure.Figure()
 
-canvas = FigureCanvasAgg(sator.fig)
+canvas = FigureCanvasAgg(fig)
 
-sator.get_pspace('nh', 'temp', 500)
+vals, bds = sator.get_pspace('nh', 'temp', 500)
+
+sator.plot_pspace(fig, vals, bds, 'nh', 'temp')
 
 canvas.print_figure('out.pdf')
