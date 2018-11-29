@@ -98,7 +98,7 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
         # Some additional variables for format 3
 
-        self.header.numtypes = snap_file['Config'].attrs.get('NTYPES', default = 6).astype(np.int32)
+        self.header.numtypes = int(snap_file['Config'].attrs.get('NTYPES', default = 6))
         self.header.unit_length = h5py_header['UnitLength_in_cm']
         self.header.unit_mass = h5py_header['UnitMass_in_g']
         self.header.unit_velocity = h5py_header['UnitVelocity_in_cm_per_s']

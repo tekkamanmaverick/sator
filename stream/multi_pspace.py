@@ -7,9 +7,9 @@ from sator import *
 
 mp.rcParams.update({'font.size': 18})
 
-nfiles = 4
-nrows = 2
-ncols = 2
+nfiles = 1
+nrows = 1
+ncols = 1
 
 xfield = 'nh'
 yfield = 'temp'
@@ -34,10 +34,32 @@ for i in np.arange(nfiles):
 
     objs.append(sator('par.txt'))
 
-    if i == 1:
-        objs[i].get_header('test', 1)
-    else:
-        objs[i].get_header('test', 0)
+    if i == 0:
+        base = 'test'
+        num = 1
+    elif i == 1:
+        base = 'mh1w2r1'
+        num = 0
+    elif i == 2:
+        base = 'mh2w1r1'
+        num = 48
+    elif i == 3:
+        base = 'mh2w1r1'
+        num = 0
+    elif i == 3:
+        base = 'mh3w1r1'
+        num = 73
+    elif i == 4:
+        base = 'mh3w2r1'
+        num = 73
+    elif i == 5:
+        base = 'mh5w1r1'
+        num = 273
+    elif i == 6:
+        base = 'mh5w2r1'
+        num = 90
+
+    objs[i].get_header(base, num)
 
     objs[i].init_fields(0)
 
