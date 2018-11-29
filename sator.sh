@@ -1,6 +1,9 @@
 
-parfile=$1
+if [[ $# -lt 1 ]]; then
+    echo No parameter file specified! Exiting...
+    exit
+fi
 
 make
 
-python main.py $parfile > /dev/null 2>&1 &
+python main.py $1 > /dev/null 2>&1 &

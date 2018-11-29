@@ -11,9 +11,8 @@
 	* ScrolledText, Tkinter
 2. Git clone the repository to your favorite location
 3. Set the environment variable DATADIR to point to the folder with the snapshot data. For example, the snapshot files of a simulation named *test* must be located in *$DATADIR/test/*, and the files must be named e.g. *test_000* in that directory.
-4. Type `make` in the sator directory to compile the C libraries
-5. Copy `par_template.txt` to your own parameter file (e.g. `par.txt`) and set the parameters
-4. Start the program with `python sator.py par.txt`. If all goes well you should see the main menu.
+4. Copy `par_template.txt` to your own parameter file (e.g. `par.txt`) and set the parameters
+5. Start the program with `./sator.sh par.txt`, where `par.txt` is the parameter file. If you are starting sator for the first time, the library files should first be complied. Finally, sator is started and you should see the main menu
 
 Please report any bugs to the Issues site, email me at *tgreif@uni-heidelberg.de*, or simply fix it yourself.
 
