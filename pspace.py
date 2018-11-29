@@ -80,8 +80,8 @@ def get_pspace(self, xfield, yfield, npixels):
 
     # Limit integers
 
-    xidx = np.minimum(xidx, npixels - 1)
-    yidx = np.minimum(yidx, npixels - 1)
+    xidx = np.minimum(np.maximum(xidx, 0), npixels - 1)
+    yidx = np.minimum(np.maximum(yidx, 0), npixels - 1)
 
     # Intitialize results array
 

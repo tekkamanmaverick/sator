@@ -98,7 +98,7 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
         # Some additional variables for format 3
 
-        self.header.numtypes = snap_file['Config'].attrs.get('NTYPES', default = 6)
+        self.header.numtypes = snap_file['Config'].attrs.get('NTYPES', default = 6).astype(np.int32)
         self.header.unit_length = h5py_header['UnitLength_in_cm']
         self.header.unit_mass = h5py_header['UnitMass_in_g']
         self.header.unit_velocity = h5py_header['UnitVelocity_in_cm_per_s']
@@ -231,7 +231,7 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
     if not self.header.type_list:
         self.flag_error = 2
 
-# Reead desired snap field from snapshot
+# Read desired snap field from snapshot
 
 def get_snap_field(self, snap_field):
 
@@ -461,6 +461,11 @@ def get_snap_field(self, snap_field):
 
             if nentries > 1:
                 vals = vals.reshape((tot_count / nentries, nentries))
+
+        # Convert to float64 if necessary (required e.g. for C routines)
+
+        if vals.dtype == np.dtype('float32'):
+            vals = vals.astype('float64')
 
         # return error flag and dataset
                 

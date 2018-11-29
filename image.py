@@ -25,7 +25,7 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
     else:
         log_plot = 1
 
-    # Get particple positions
+    # Get particle positions
 
     flag, pos = self.get_refined_field('pos')
 

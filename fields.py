@@ -106,7 +106,7 @@ def get_refined_field(self, refined_field):
 
         header = self.header
 
-        h = header.HubbleParam
+        hubbleparam = header.HubbleParam
         redshift = header.redshift
         unit_length = header.unit_length
         unit_mass = header.unit_mass
@@ -123,7 +123,7 @@ def get_refined_field(self, refined_field):
             if flag:
                 self.snap_field_error(snap_field)
             else:
-                fac = 1. / h * unit_length
+                fac = 1. / hubbleparam * unit_length
                 vals *= fac
 
         elif refined_field == 'r':
@@ -135,7 +135,9 @@ def get_refined_field(self, refined_field):
             if flag:
                 self.snap_field_error(snap_field)
             else:
-                fac = 1. / h * unit_length
+
+                fac = 1. / hubbleparam * unit_length
+
                 pos *= fac
 
                 self.get_center(0)
@@ -179,7 +181,7 @@ def get_refined_field(self, refined_field):
             if flag:
                 self.snap_field_error(snap_field)
             else:
-                fac = 1. / h * unit_mass
+                fac = 1. / hubbleparam * unit_mass
                 vals *= fac
 
         elif refined_field == 'rho':
@@ -191,7 +193,7 @@ def get_refined_field(self, refined_field):
             if flag:
                 self.snap_field_error(snap_field)
             else:
-                fac = h**2 * (1. + redshift)**3 * unit_mass / unit_length**3
+                fac = hubbleparam**2 * (1. + redshift)**3 * unit_mass / unit_length**3
                 vals *= fac
 
         elif refined_field == 'nh':
@@ -203,7 +205,7 @@ def get_refined_field(self, refined_field):
             if flag:
                 self.snap_field_error(snap_field)
             else:
-                fac = h**2 * (1. + redshift)**3 * unit_mass / unit_length**3
+                fac = hubbleparam**2 * (1. + redshift)**3 * unit_mass / unit_length**3
                 vals *= fac
                 fac = hydrogen_massfrac / protonmass
                 vals *= fac
@@ -260,22 +262,34 @@ def get_refined_field(self, refined_field):
             flag, vals = self.get_snap_field(snap_field)
 
             if flag:
-                self.snap_field_error(snap_field)
-            else:
-                fac = (1. / h)**3 * unit_length**3
-                vals *= fac
+
+                snap_field = 'Masses'
+
+                flag, mass = self.get_snap_field(snap_field)
+
+                if flag:
+                    self.snap_field_error(snap_field)
+
+                snap_field = 'Density'
+
+                flag, rho = self.get_snap_field(snap_field)
+
+                if flag:
+                    self.snap_field_error(snap_field)
+
+                vals = mass / rho
+
+            fac = (unit_length / hubbleparam)**3
+
+            vals *= fac
 
         elif refined_field == 'h':
 
-            snap_field = 'Volume'
-
-            flag, vals = self.get_snap_field(snap_field)
+            flag, vals = get_refined_field(self, 'vol')
 
             if flag:
-                self.snap_field_error(snap_field)
+                return
             else:
-                fac = (1. / h)**3 * unit_length**3
-                vals *= fac
                 vals = (3 * vals / 4. / np.pi)**(1. / 3.)
 
         elif refined_field == 'gravacc':
@@ -362,15 +376,19 @@ def get_refined_field(self, refined_field):
             if flag:
                 self.snap_field_error(snap_field)
             else:
-                fac = (1. + redshift) * h * unit_velocity / unit_length
+                fac = (1. + redshift) * hubbleparam * unit_velocity / unit_length
                 vals *= fac
 
         else:
             flag = 1
 
+        # Check for error
+
         if flag:
             self.refined_fields[refined_field] = np.empty(0)
         else:
             self.refined_fields[refined_field] = vals
+
+        # Return
 
         return flag, vals
