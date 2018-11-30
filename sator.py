@@ -226,7 +226,7 @@ class sator:
 
             self.plot_sub_options.append(self.plot_fields.keys())
             self.plot_sub_options.append(tk.StringVar())
-            self.plot_sub_options[1].set(self.plot_sub_options[0][0])
+            self.plot_sub_options[1].set(list(self.plot_sub_options[0])[0])
 
             menu = tk.OptionMenu(self.plot_left_sub_options_frame, self.plot_sub_options[1], *self.plot_sub_options[0])
             menu.grid(row = 0, column = 1, sticky = 'w')
@@ -237,7 +237,7 @@ class sator:
             label.grid(row = 1, column = 0, sticky = 'w')
 
             self.plot_sub_options.append(tk.StringVar())
-            self.plot_sub_options[2].set(self.length_units.keys()[0])
+            self.plot_sub_options[2].set(list(self.length_units.keys())[0])
 
             menu = tk.OptionMenu(self.plot_left_sub_options_frame, self.plot_sub_options[2], *self.length_units.keys())
             menu.grid(row = 1, column = 2, sticky = 'w')
@@ -326,7 +326,7 @@ class sator:
 
             self.plot_sub_options.append(self.plot_fields.keys())
             self.plot_sub_options.append(tk.StringVar())
-            self.plot_sub_options[1].set(self.plot_sub_options[0][0])
+            self.plot_sub_options[1].set(list(self.plot_sub_options[0])[0])
 
             menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[1], *self.plot_sub_options[0])
             menu.grid(row = 0, column = 1, sticky = 'w')
@@ -336,7 +336,7 @@ class sator:
 
             self.plot_sub_options.append(self.plot_fields.keys())
             self.plot_sub_options.append(tk.StringVar())
-            self.plot_sub_options[3].set(self.plot_sub_options[2][0])
+            self.plot_sub_options[3].set(list(self.plot_sub_options[2])[0])
 
             menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[3], *self.plot_sub_options[2])
             menu.grid(row = 1, column = 1, sticky = 'w')
@@ -366,7 +366,7 @@ class sator:
 
             self.plot_sub_options.append(self.plot_fields.keys())
             self.plot_sub_options.append(tk.StringVar())
-            self.plot_sub_options[1].set(self.plot_sub_options[0][0])
+            self.plot_sub_options[1].set(list(self.plot_sub_options[0])[0])
 
             menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[1], *self.plot_sub_options[0])
             menu.grid(row = 0, column = 1, sticky = 'w')
@@ -376,7 +376,7 @@ class sator:
 
             self.plot_sub_options.append(self.plot_fields.keys())
             self.plot_sub_options.append(tk.StringVar())
-            self.plot_sub_options[3].set(self.plot_sub_options[2][0])
+            self.plot_sub_options[3].set(list(self.plot_sub_options[2])[0])
 
             menu = tk.OptionMenu(self.plot_sub_options_frame, self.plot_sub_options[3], *self.plot_sub_options[2])
             menu.grid(row = 1, column = 1, sticky = 'w')

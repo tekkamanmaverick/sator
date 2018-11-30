@@ -67,7 +67,7 @@ def do_rotation(pos, alpha, beta, center):
 
     # Rotate positions
 
-    rot_pos = np.zeros([pos.size / 3, 3])
+    rot_pos = np.zeros([int(pos.size / 3), 3])
 
     rot_pos[:, 0] = rot[0, 0] * pos[:, 0]
     rot_pos[:, 0] += rot[0, 1] * pos[:, 1]

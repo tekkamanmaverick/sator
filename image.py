@@ -64,7 +64,7 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
 
         # Get normalized positions
 
-        self.norm_pos = np.zeros([pos.size / 3, 3])
+        self.norm_pos = np.zeros([int(pos.size / 3), 3])
 
         for i in np.arange(3):
             self.norm_pos[:, i] = (pos[:, i] - self.center[i]) / self.header.boxsize_cgs
@@ -174,7 +174,7 @@ def get_image(self, plot_option, refined_field, width, length_unit, npixels, arg
 
         # Get index list for particles within r = 2 * sub box (due to rotation)
 
-        rel_pos = np.zeros([self.norm_pos.size / 3, 3])
+        rel_pos = np.zeros([int(self.norm_pos.size / 3), 3])
 
         for i in np.arange(3):
             rel_pos[:, i] = (self.norm_pos[:, i] - self.norm_center[i]) / norm_width

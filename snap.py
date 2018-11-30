@@ -460,7 +460,7 @@ def get_snap_field(self, snap_field):
             nentries = self.snap_fields_nentries[snap_field]
 
             if nentries > 1:
-                vals = vals.reshape((tot_count / nentries, nentries))
+                vals = vals.reshape((int(tot_count / nentries), nentries))
 
         # Convert to float64 if necessary (required e.g. for C routines)
 
