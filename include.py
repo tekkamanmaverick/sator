@@ -8,8 +8,8 @@ import os
 import h5py
 import struct
 import sys
-import ScrolledText
-import Tkinter as tk
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
 from ctypes import c_int, c_double
 from scipy import spatial
 from scipy.spatial import cKDTree

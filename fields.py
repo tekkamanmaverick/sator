@@ -102,7 +102,7 @@ def get_refined_field(self, refined_field):
 
     else:
 
-        print 'Reading refined field \'' + refined_field + '\'..'
+        print('Reading refined field \'' + refined_field + '\'..')
 
         header = self.header
 

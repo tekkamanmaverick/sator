@@ -12,7 +12,7 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
     self.header = header()
 
     if verbose:
-        print 'Reading snapshot...'
+        print('Reading snapshot...')
 
     self.flag_error = 0
 
@@ -60,9 +60,9 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
     if verbose:
 
         if self.flag_hdf5:
-            print 'Snapshot is in HDF5 (format 3)'
+            print('Snapshot is in HDF5 (format 3)')
         else:
-            print 'Snapshot is in binary (format 1 or 2)'    
+            print('Snapshot is in binary (format 1 or 2)')
 
     # Read header
 

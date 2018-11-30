@@ -215,6 +215,6 @@ def get_color_map(field):
             
 def endrun(msg):
 
-    print msg
+    print(msg)
 
     sys.exit()

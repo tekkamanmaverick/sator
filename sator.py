@@ -87,7 +87,7 @@ class sator:
         self.output_frame = tk.Frame(self.root)
         self.output_frame.place(relx = 0, rely = 0.5, relwidth = self.ratio, relheight = 0.5)
 
-        self.stdout = ScrolledText.ScrolledText(self.output_frame)
+        self.stdout = ScrolledText(self.output_frame)
         self.stdout.pack()
 
         redir = redirect(self.stdout)
@@ -505,7 +505,10 @@ class redirect(object):
 
     def write(self, string):
         self.output.insert(tk.END, string)
-        
+
+    def flush(self):
+        pass
+
 # Import functions from other files
 
 # From settings.py
