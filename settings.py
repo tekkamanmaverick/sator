@@ -12,9 +12,9 @@ def get_settings(self, par_file):
 
     # Set name of snapshots
     if 'SNAPNAME' in os.environ:
-        self.snap_name = os.environ['SNAPNAME']
+        self.snap_base = os.environ['SNAPBASE']
     else:
-        self.snap_name = ''
+        self.snap_base = ''
 
     # Relative size of main window
 
