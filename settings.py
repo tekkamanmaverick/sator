@@ -11,7 +11,7 @@ def get_settings(self, par_file):
     self.data_dir = os.environ['DATADIR']
 
     # Set name of snapshots
-    if 'SNAPNAME' in os.environ:
+    if 'SNAPBASE' in os.environ:
         self.snap_base = os.environ['SNAPBASE']
     else:
         self.snap_base = ''
