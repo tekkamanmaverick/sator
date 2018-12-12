@@ -10,6 +10,12 @@ def get_settings(self, par_file):
 
     self.data_dir = os.environ['DATA_DIR']
 
+    # Set name of snapshots
+    if 'SNAPBASE' in os.environ:
+        self.snap_base = os.environ['SNAPBASE']
+    else:
+        self.snap_base = ''
+
     # Relative size of main window
 
     self.win_fac = 0.8

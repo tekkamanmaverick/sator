@@ -35,7 +35,10 @@ def get_header(self, base, snapnum, sub_num = 0, verbose = 1):
 
     # Check snapshot format and if it is distributed among multiple files
 
-    self.snap_path += '/' + base + '_' + snap_string
+    if len(self.snap_base) > 0:
+        self.snap_path += '/' + self.snap_base + '_' + snap_string
+    else:
+        self.snap_path += '/' + base + '_' + snap_string
 
     if os.path.exists(self.snap_path):
         self.flag_multiple = 0
