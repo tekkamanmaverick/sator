@@ -8,7 +8,7 @@ def get_settings(self, par_file):
 
     # Directory of snapshot data
 
-    self.data_dir = os.environ['DATADIR']
+    self.data_dir = os.environ['DATA_DIR']
 
     # Relative size of main window
 
