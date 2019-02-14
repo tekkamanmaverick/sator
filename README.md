@@ -11,7 +11,7 @@
 3. Set the environment variable *DATADIR* to point to the folder with the snapshot data. For example, the snapshot files of a simulation named *test* must be located in *$DATADIR/test/*, and the files must be named e.g. *test_000* in that directory.
 4. Copy `par_template.txt` to your own parameter file (e.g. *par.txt*) and set the parameters
 5. Copy `snap_fields_template.txt` to your own snapshot fields file (e.g. *snap_fields.txt*) and define the fields in the snapshot for format 1 (Note: this is only necessary for snapshot format 1)
-6. Start sator with `./sator.sh`. In this case the parameter file name defaults to *par.txt*. If you are starting sator for the first time, the library files should first be complied.
+6. Start sator with `./sator.sh`. In this case the parameter file name defaults to *par.txt*. If you are starting sator for the first time, the library files will first be complied.
 
 If you want to use a different name for the parameter file, you can manually invoke sator with the command `python3 main.py par_alt.txt`, where *par_alt.txt* is the alternative name of the parameter file. You can also run sator in script mode. An example is given in the file *script.py*. You can run the script with `python3 script.py`.
 
