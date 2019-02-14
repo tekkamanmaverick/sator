@@ -1,14 +1,6 @@
 **Installation**
 
-1. If not already present, install Python 3. Sator requires the following modules:
-	* tkinter
-	* numpy
-	* scipy
-	* matplotlib
-	* mpl_toolkits
-	* h5py
-	* ctypes
-2. Depending on the version you have installed, you might need to install some of these modules. I had to perform the following steps:
+1. If not already present, install Python 3. Sator requires the following modules: tkinter, numpy, scipy, matplotlib, mpl_toolkits, h5py, ctypes. Depending on the version you have installed, you might need to install some of these modules. I had to perform the following steps:
 	* `sudo apt-get install python3-pip`
 	* `sudo apt-get install python3-tk`
 	* `pip3 install numpy`
