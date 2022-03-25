@@ -1,6 +1,5 @@
 **Installation**
 
-# Note: Since I have left astrophysics, Volker Springel has assumed ownership of the code. Please contact him for any questions. Under dire circumstances, you may contact me at *tgreif81@gmail.com* :).
 
 1. If not already present, install Python 3. Sator requires the following modules: tkinter, numpy, scipy, matplotlib, mpl_toolkits, h5py, ctypes. Depending on the version of Python you have installed, you might need to install some of these modules. I had to perform the following steps:
 	* `sudo apt-get install python3-pip`
@@ -15,9 +14,7 @@
 5. Copy `snap_fields_template.txt` to your own snapshot fields file (e.g. *snap_fields.txt*) and define the fields in the snapshot for format 1 (Note: this is only necessary for snapshot format 1)
 6. Start sator with `./sator.sh`. In this case the parameter file name defaults to *par.txt*. If you are starting Sator for the first time, the C libraries will be compiled. If you want to use a different name for the parameter file, you can manually invoke sator with the command `python3 main.py par_alt.txt`, where *par_alt.txt* is the alternative name of the parameter file. You can also run sator in script mode. An example is given in the file *script.py*. You can run the script with `python3 script.py`.
 
-# Please report any bugs to the Issues site, email Volker Springel at *vspringel@mpa-garching.mpg.de*, or simply fix it yourself :).
 
-hehe
 
 **Fields in Sator**
 
